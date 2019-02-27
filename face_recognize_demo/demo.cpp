@@ -217,8 +217,6 @@ int main() {
     }
     LOG("createGroup OK, id(%s) name(%s) modelType(%d)", sGroup.id.c_str(), sGroup.name.c_str(), sGroup.modelType);
 
-    sFaceRecognize->setGroupId(sGroup.id);
-
     //step 5: addPersonsAndFeatures
     status = addPersonsAndFeatures();
     if (status != OK) {
@@ -226,6 +224,8 @@ int main() {
         return 0;
     }
     LOG("addPersonsAndFeatures OK");
+
+    sFaceRecognize->setGroupId(sGroup.id);
 
     //step 6: recognizePictures
     status = recognizePictures();

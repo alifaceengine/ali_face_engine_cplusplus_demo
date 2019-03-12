@@ -124,7 +124,6 @@ static int detectVideo() {
     parameter.checkQuality = false;
     parameter.checkLiveness = false;
     sFaceDetect->setVideoParameter(parameter);
-    sFaceDetect->setDetectVideoType(FaceDetect::ACCURATE);
     while (1) {
         Mat previewFrame;
         capture >> previewFrame;
@@ -159,7 +158,6 @@ int detectMP4() {
     parameter.checkQuality = false;
     parameter.checkLiveness = false;
     sFaceDetect->setVideoParameter(parameter);
-    sFaceDetect->setDetectVideoType(FaceDetect::ACCURATE);
 
     IplImage *frame = NULL;
     CvCapture *capture = NULL;

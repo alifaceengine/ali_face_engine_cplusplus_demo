@@ -179,11 +179,10 @@ int main() {
     enableDebug(false);
 
     //step 2: set Cloud addr and account if you using CloudServer
-    //setCloudAddr("101.132.89.177", 15000);
-    //setCloudAddr("127.0.0.1", 8080);
+    setCloudAddr("101.132.89.177", 15000);
     setCloudLoginAccount("admin", "admin");
 
-    //step 3: create FaceRecognize Instance (TERMINAL or CLOUD)
+    //step 3: create FaceRegister Instance
     sFaceRegister = FaceRegister::createInstance();
     LOG("sFaceRegister(%p)", sFaceRegister);
     if (!sFaceRegister) {

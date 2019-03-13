@@ -43,6 +43,8 @@ namespace ali_face_engine {
 
         static Image rotateToPortrait(Image &src);
 
+        static Image crop(Image &src, Rect &roi);
+
         static void rgb888ToBGR888(unsigned char *rgb, int width, int height, unsigned char *&bgr);
 
         static void rgb888ToBGR888(unsigned char *rgb, int width, int height, unsigned char *&bgr, int &bgrLen);

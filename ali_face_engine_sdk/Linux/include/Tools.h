@@ -14,6 +14,8 @@ using namespace std;
 namespace ali_face_engine {
     class DLL_API Tools {
     public:
+        static float compareFeatures(string &feature1, string &feature2);
+
         static void drawFaceRect(Image &image, Face &face, int color);
 
         static void drawFaceRect(Image &image, list<Face> faceList, int color);

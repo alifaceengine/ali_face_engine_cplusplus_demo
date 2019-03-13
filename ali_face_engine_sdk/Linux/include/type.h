@@ -4,14 +4,6 @@
 #include <string.h>
 #include <list>
 
-/**
- * @file type.h
- * @brief [EN] type define.
- * @brief [中文] 类型定义。
- * @author [EN] hujunyuan
- * @author [中文] 胡俊远
-*/
-
 using namespace std;
 
 #ifdef WIN32
@@ -21,10 +13,6 @@ using namespace std;
 #endif
 
 namespace ali_face_engine {
-    /**
-     * @brief [EN] execute status
-     * @brief [中文] 执行的结果
-    */
     enum Error {
         OK = 0,///< [EN] success [中文] 成功
         FAILED = -1,///< [EN] other fail [中文] 其他失败原因
@@ -105,45 +93,12 @@ namespace ali_face_engine {
     */
     class DLL_API Image {
     public:
-        /**
-         * @attention [EN] data must be set
-         * @attention [中文] 必选
-         */
-        unsigned char *data;///< [EN] image buffer addr [中文] 图像数据地址
-        /**
-         * @attention [EN] format must be set
-         * @attention [中文] 必选
-         */
-        enum ImageFormat format;///< [EN] image format [中文] 图像格式
-
-        /**
-         * @attention [EN] rotation must be set when format is RGB888|BGR888|NV21|YV12|I420
-         * @attention [中文] 当format是RGB888|BGR888|NV21|YV12|I420时，rotation必须设置
-         */
-        enum ImageRotation rotation;///< [EN] image rotation [中文] 图像格式
-
-        /**
-         * @attention [EN] width must be set when format is RGB888|BGR888|NV21|YV12|I420
-         * @attention [中文] 当format是RGB888|BGR888|NV21|YV12|I420时，width必须设置
-         * */
-        int width;///< [EN] image width [中文] 图像宽度
-
-        /**
-         * @attention [EN] stride can be set when format is RGB888|BGR888|NV21|YV12|I420, if stride is 0, means stride equals width
-         * @attention [中文] 当format是RGB888|BGR888|NV21|YV12|I420时，stride可以设置，当stride设为0时，那么stride和width等长
-         * */
-        int stride;///< [EN] image stride [中文] 图像对齐宽度
-
-        /**
-         * @attention [EN] height must be set when format is RGB888|BGR888|NV21|YV12|I420
-         * @attention [中文] 当format是RGB888|BGR888|NV21|YV12|I420时，height必须设置
-         * */
-        int height;///< [EN] image height [中文] 图像高度
-
-        /**
-         * @attention [EN] dataLen must be set when format is ImageFormat_UNKNOWN|JPEG|PNG|BMP
-         * @attention [中文] 当format是ImageFormat_UNKNOWN|JPEG|PNG|BMP时，dataLen必须设置
-         * */
+        unsigned char *data;
+        enum ImageFormat format;
+        enum ImageRotation rotation;
+        int width;
+        int stride;
+        int height;
         int dataLen;
 
     public:
@@ -257,44 +212,14 @@ namespace ali_face_engine {
     */
     class DLL_API DetectParameter {
     public:
-        /**
-         * @brief [EN] enable quality check when set to 1, disable quality check when set to 0
-         * @brief [中文] 当设为1时开启质量判断，当设为0时关闭质量判断
-         * */
         bool checkQuality;
-        /**
-         * @brief [EN] enable liveness check when set to 1, disable liveness check when set to 0
-         * @brief [中文] 当设为1时开启活体判断，当设为0时关闭活体判断
-         * */
         bool checkLiveness;
-        /**
-        * @brief [EN] enable age check when set to 1, disable age check when set to 0
-        * @brief [中文] 当设为1时开启年龄判断，当设为0时关闭年龄判断
-        * */
         bool checkAge;
-        /**
-         * @brief [EN] enable gender check when set to 1, disable gender check when set to 0
-         * @brief [中文] 当设为1时开启性别判断，当设为0时关闭性别判断
-         * */
         bool checkGender;
-        /**
-         * @brief [EN] enable expression check when set to 1, disable expression check when set to 0
-         * @brief [中文] 当设为1时开启表情判断，当设为0时关闭表情判断
-         * */
         bool checkExpression;
-        /**
-         * @brief [EN] enable glass check when set to 1, disable glass check when set to 0
-         * @brief [中文] 当设为1时开启是否戴眼镜判断，当设为0时关闭是否戴眼镜判断
-         * */
         bool checkGlass;
-        /**
-         * @brief [EN] region of interest
-         * @brief [中文] 检测当区域
-         * @note [EN] if image is 640x480, when you want detect round 200x200, you can set eft：220，top：120，right：420，bottom：320.
-         * @note [中文] 如image是640x480，但是只需要中间200x200的区域进行检测，则可设置roi为left：220，top：120，right：420，bottom：320。
-         * */
-        Rect roi;
 
+    public:
         DetectParameter();
     };
 

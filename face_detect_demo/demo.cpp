@@ -26,6 +26,8 @@ static int detectVideo();
 
 static int detectMP4();
 
+static void printTextToWindow(IplImage *frame, char *display_text, int x, int y);
+
 static int loadFile(unsigned char *&buf, int &len, char *path);
 
 static int saveFile(char *buf, int len, char *path);
@@ -33,7 +35,7 @@ static int saveFile(char *buf, int len, char *path);
 FaceDetect *sFaceDetect;
 
 int main() {
-    enableDebug(false);
+    enableDebug(true);
     //step 1: authorize or enable debug
     LOG(TAG, "version(%s)", getVersion());
     int status = authorize(
@@ -51,10 +53,10 @@ int main() {
     LOG(TAG, "sFaceDetect(%p)", sFaceDetect);
 
     //step 4: detectPicture
-    detectPicture();
+    //detectPicture();
 
     //step 5: detectVideo
-    detectVideo();
+    //detectVideo();
 
     detectMP4();
 
@@ -72,7 +74,7 @@ int detectPicture() {
     image.format = ImageFormat_UNKNOWN;
     image.dataLen = dataLen;
 
-    list<Face> faceList;
+    list <Face> faceList;
     DetectParameter parameter = sFaceDetect->getPictureParameter();
     parameter.checkQuality = true;
     parameter.checkLiveness = true;
@@ -100,7 +102,7 @@ int detectPicture() {
             it->attribute.gender, it->attribute.expression, it->attribute.glass);
     }
 
-#if 0
+#if 1
     Image rgbImage = Codec::toBGR888(image);
     Tools::drawFaceRect(rgbImage, faceList, 0xFF0000);
     Tools::drawFacePoint(rgbImage, faceList, 0x00FF00);
@@ -108,7 +110,13 @@ int detectPicture() {
     cv::Mat yuvImg;
     yuvImg.create(rgbImage.height, rgbImage.width, CV_8UC3);
     memcpy(yuvImg.data, rgbImage.data, rgbImage.width * rgbImage.height * 3);
-    cv::imshow("yuv", yuvImg);
+
+    float scale = 1.0;
+    Size dsize = Size(yuvImg.cols * scale, yuvImg.rows * scale);
+    Mat image2 = Mat(dsize, CV_32S);
+    resize(yuvImg, image2, dsize);
+
+    cv::imshow("yuv", image2);
     waitKey(0);
 #endif
 
@@ -134,7 +142,7 @@ static int detectVideo() {
         image.height = previewFrame.rows;
         image.format = BGR888;
 
-        list<Face> faceList;
+        list <Face> faceList;
         sFaceDetect->detectVideo(image, faceList);
 
         for (list<Face>::iterator it = faceList.begin(); it != faceList.end(); ++it) {
@@ -155,35 +163,51 @@ static int detectVideo() {
 
 int detectMP4() {
     DetectParameter parameter = sFaceDetect->getVideoParameter();
-    parameter.checkQuality = false;
+    parameter.checkQuality = true;
     parameter.checkLiveness = false;
     sFaceDetect->setVideoParameter(parameter);
 
     IplImage *frame = NULL;
     CvCapture *capture = NULL;
-    capture = cvCreateFileCapture("test.mp4");
+    capture = cvCreateFileCapture("/Users/junyuan.hjy/Downloads/VID-20190318-WA0011.mp4");
     frame = cvQueryFrame(capture);
 
     cvNamedWindow("frame");
+    int frameIndex = 0;
     while (frame) {
-        LOG(TAG, "frame: size(%dx%d) frame->imageSize=%d depth=%d widthStep=%d nChannels=%d nSize=%d", frame->width,
-            frame->height, frame->imageSize, frame->depth, frame->widthStep, frame->nChannels, frame->nSize);
+        LOG(TAG, "frame(%d): size(%dx%d) frame->imageSize=%d depth=%d widthStep=%d nChannels=%d nSize=%d", frameIndex,
+            frame->width, frame->height, frame->imageSize, frame->depth, frame->widthStep, frame->nChannels,
+            frame->nSize);
+
+        if (frameIndex < 0) {
+            frame = cvQueryFrame(capture);
+            frameIndex++;
+            continue;
+        }
+
+        if (frameIndex == 1000) {
+            //break;
+        }
 
         Image image;
         image.data = (unsigned char *) frame->imageData;
-        image.width = frame->width;
+        image.width = frame->widthStep / 3;
         image.height = frame->height;
         image.format = BGR888;
 
-        list<Face> faceList;
-        //sFaceDetect->detectVideo(image, faceList);
-        sFaceDetect->detectPicture(image, faceList);
+        list <Face> faceList;
+        int status = sFaceDetect->detectVideo(image, faceList);
 
         int i = 0;
         for (list<Face>::iterator it = faceList.begin(); it != faceList.end(); ++it) {
-            LOG(TAG, "detectVideo faces[%d] quality(%d) liveness(%d) image(%p) yaw=%f", i, it->attribute.quality.score,
-                it->attribute.liveness.score, image.data, it->pose.yaw);
+            LOG(TAG, "detectVideo faces[%d] confidence(%d) quality(%d) liveness(%d) image(%p) yaw=%f", i,
+                it->confidence, it->attribute.quality.score, it->attribute.liveness.score, image.data, it->pose.yaw);
             Tools::drawFaceRect(image, *it, 0xFF0000);
+
+            char display_text[100] = {0};
+            sprintf(display_text, "conf:%d, quality:%d", it->confidence, it->attribute.quality.score);
+
+            printTextToWindow(frame, display_text, it->rect.left, it->rect.top + 10);
             i++;
         }
 
@@ -191,9 +215,27 @@ int detectMP4() {
         cvWaitKey(1);
 
         frame = cvQueryFrame(capture);
+        frameIndex++;
     }
 
     return 0;
+}
+
+void printTextToWindow(IplImage *frame, char *display_text, int x, int y) {
+    Mat previewFrame = cvarrToMat(frame);
+    std::string text = display_text;
+    int font_face = cv::FONT_HERSHEY_COMPLEX;
+    double font_scale = 0.8;
+    int thickness = 1;
+    int baseline;
+    //获取文本框的长宽
+    cv::Size text_size = cv::getTextSize(text, font_face, font_scale, thickness, &baseline);
+
+    //将文本框居中绘制
+    cv::Point origin;
+    origin.x = x;
+    origin.y = y;
+    cv::putText(previewFrame, text, origin, font_face, font_scale, cv::Scalar(0, 255, 0), thickness, 8, 0);
 }
 
 int loadFile(unsigned char *&buf, int &len, char *path) {

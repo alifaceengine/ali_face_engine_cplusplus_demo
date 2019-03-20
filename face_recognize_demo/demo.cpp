@@ -46,6 +46,8 @@ static int recognizePictures();
 
 static int recognizeVideo();
 
+static int recognizeMP4();
+
 static int verifyVideo();
 
 static int verifySamePerson();
@@ -56,118 +58,8 @@ static int loadFile(unsigned char *&buf, int &len, char *path);
 
 int saveFile(char *buf, int len, char *path);
 
-static const char *GROUP_NAME = "groupu1";
+static const char *GROUP_NAME = "group_test";
 static Group sGroup;
-
-class RecognizeVideoListenerImp2 : public FaceRecognize::RecognizeVideoListener {
-public:
-    RecognizeVideoListenerImp2() {
-
-    }
-
-    virtual ~RecognizeVideoListenerImp2() {
-
-    }
-
-    virtual void onRecognized(Image &image, list <RecognizeResult> results) {
-        LOG("");
-        int i = 0;
-        for (list<RecognizeResult>::iterator it = results.begin(); it != results.end(); ++it) {
-            LOG("onRecognized[%d] BaseName(%s)  similarity(%f)", i,
-                it->personName.c_str(), it->similarity);
-            i++;
-        }
-    }
-
-    virtual void onVerified(Image &image, list <VerifyResult> results) {
-        LOG("");
-        //sVerifyResults = results;
-        int i = 0;
-        for (list<VerifyResult>::iterator it = results.begin(); it != results.end(); ++it) {
-            LOG("onVerified[%d] similarity(%f)", i, it->similarity);
-            i++;
-        }
-    }
-};
-
-int recognizeVideo2() {
-    FaceRecognize::RecognizeVideoListener *listener = new RecognizeVideoListenerImp2();
-    sFaceRecognize->setRecognizeVideoListener(listener);
-
-    unsigned char *data = 0;
-    int dataLen = 0;
-
-#if 0
-    //loadFile(data, dataLen, "20.bgr");
-    loadFile(data, dataLen, "1280x720.bgr");
-    Image image;
-    image.data = data;
-    image.width = 1200;
-    image.height = 720;
-    image.format = BGR888;
-    image.dataLen = dataLen;
-#else
-    loadFile(data, dataLen, "liudehua_400x519.rgb24");
-    Image image;
-    image.data = data;
-    image.width = 400;
-    image.height = 519;
-    image.format = RGB888;
-    image.dataLen = dataLen;
-#endif
-    while (1) {
-        list <Face> faces;
-        LOG("recognizeVideo begin");
-        sFaceRecognize->recognizeVideo(image, faces);
-        LOG("recognizeVideo count=%d", faces.size());
-    }
-}
-
-void extractFeature(bool loop) {
-    unsigned char *data = 0;
-    int dataLen = 0;
-    loadFile(data, dataLen, "1280x720.bgr");
-
-    Image image;
-    image.data = data;
-    image.width = 1280;
-    image.height = 720;
-    image.format = BGR888;
-    image.dataLen = dataLen;
-
-    list <Face> faces;
-    int status = sFaceDetect->detectPicture(image, faces);
-    if (status != OK || faces.size() == 0) {
-        LOG("detectPicture error(%d)", status);
-        if (image.data) {
-            free(image.data);
-            image.data = 0;
-        }
-        return;
-    }
-
-    int loopNum = 0;
-    while (true) {
-        string feature;
-        status = sFaceRegister->extractFeature(image, *faces.begin(), MODEL_SMALL, feature);
-
-        //sleep(1);
-        if (loop) {
-            continue;
-        } else {
-            if (loopNum == 2) {
-                break;
-            }
-        }
-
-        loopNum++;
-    }
-
-    if (image.data) {
-        free(image.data);
-        image.data = 0;
-    }
-}
 
 int main() {
     //step 1: authorize or enable debug
@@ -176,7 +68,7 @@ int main() {
             "eyJ2ZW5kb3JJZCI6ImNlc2hpX3ZlbmRvciIsInJvbGUiOjIsImNvZGUiOiIzRDE5RUIwNjY1OEE5MUExQzlCNDY0MzhDN0QwNDFGMyIsImV4cGlyZSI6IjIwMTkwMzMxIiwidHlwZSI6MX0=");
     LOG("authorize(%d)", status);
     setPersistencePath("./");
-    enableDebug(false);
+    enableDebug(true);
 
     //step 2: set Cloud addr and account if you using CloudServer
     setCloudAddr("101.132.89.177", 15000);
@@ -216,6 +108,7 @@ int main() {
     }
     LOG("createGroup OK, id(%s) name(%s) modelType(%d)", sGroup.id.c_str(), sGroup.name.c_str(), sGroup.modelType);
 
+#if 1
     //step 5: addPersonsAndFeatures
     status = addPersonsAndFeatures();
     if (status != OK) {
@@ -223,9 +116,11 @@ int main() {
         return 0;
     }
     LOG("addPersonsAndFeatures OK");
+#endif
 
     sFaceRecognize->setGroupId(sGroup.id);
 
+#if 1
     //step 6: recognizePictures
     status = recognizePictures();
     if (status != OK) {
@@ -233,7 +128,9 @@ int main() {
         return 0;
     }
     LOG("recognizePictures OK");
+#endif
 
+#if 0
     //step 9: recognizeVideo
     status = recognizeVideo();
     //status = verifyVideo();
@@ -242,6 +139,14 @@ int main() {
         return 0;
     }
     LOG("recognizeVideo OK");
+#else
+    status = recognizeMP4();
+    if (status != OK) {
+        LOG("recognizeMP4 error(%d)", status);
+        return 0;
+    }
+    LOG("recognizeMP4 OK");
+#endif
 
     return 0;
 }
@@ -455,6 +360,98 @@ static int recognizeVideo() {
     }
 }
 
+static int recognizeMP4() {
+    LOG("recognizeMP4");
+    FaceRecognize::RecognizeVideoListener *listener = new RecognizeVideoListenerImp();
+    sFaceRecognize->setRecognizeVideoListener(listener);
+
+    IplImage *frame = NULL;
+    CvCapture *capture = NULL;
+    capture = cvCreateFileCapture("faces.mp4");
+    frame = cvQueryFrame(capture);
+
+    cvNamedWindow("frame");
+
+    int frameIndex = 0;
+
+    //for write result to mp4
+//#define WRITE_RESULT_TO_MP4
+
+#ifdef WRITE_RESULT_TO_MP4
+    double fps = (int) cvGetCaptureProperty(capture, CV_CAP_PROP_FPS);
+    CvSize size = cvSize(
+            (int) cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH),
+            (int) cvGetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT));
+    CvVideoWriter *wrVideo = cvCreateVideoWriter("result.mp4", CV_FOURCC('M', 'J', 'P', 'G'), fps, size);
+#endif
+
+    while (frame) {
+        if (frameIndex < 400) {
+            frame = cvQueryFrame(capture);
+            frameIndex++;
+            continue;
+        }
+
+        if (frameIndex == 1000) {
+            break;
+        }
+
+        Image image;
+        image.data = (unsigned char *) frame->imageData;
+        image.width = frame->widthStep / 3;
+        image.height = frame->height;
+        image.format = BGR888;
+
+        list <Face> faceList;
+        int statusa = sFaceRecognize->recognizeVideo(image, faceList);
+
+        LOG("recognizeVideo faceList:%d statusa=%d", faceList.size(), statusa);
+
+        for (list<Face>::iterator it = faceList.begin(); it != faceList.end(); ++it) {
+            RecognizeResult *result = getRecognizeResult(it->trackId);
+            if (result) {
+                Mat previewFrame = cvarrToMat(frame);
+
+                char similarity_text[100] = {0};
+                sprintf(similarity_text, "%s:%f", result->personName.c_str(), result->similarity);
+                std::string text = similarity_text;
+                int font_face = cv::FONT_HERSHEY_COMPLEX;
+                double font_scale = 1;
+                int thickness = 2;
+                int baseline;
+                //获取文本框的长宽
+                cv::Size text_size = cv::getTextSize(text, font_face, font_scale, thickness, &baseline);
+
+                //将文本框居中绘制
+                cv::Point origin;
+                origin.x = it->rect.left + 100;
+                origin.y = it->rect.top + text_size.height + 10;
+                if (result->similarity >= 70) {
+                    Tools::drawFaceRect(image, *it, 0x00FF00);
+                    cv::putText(previewFrame, text, origin, font_face, font_scale, cv::Scalar(0, 255, 0), thickness,
+                                8, 0);
+                } else {
+                    Tools::drawFaceRect(image, *it, 0xFF0000);
+                    cv::putText(previewFrame, text, origin, font_face, font_scale, cv::Scalar(0, 0, 255), thickness,
+                                8, 0);
+                }
+            }
+        }
+
+#ifdef WRITE_RESULT_TO_MP4
+        cvWriteFrame(wrVideo, frame);
+#endif
+
+        cvShowImage("frame", frame);
+        cvWaitKey(1);
+        frame = cvQueryFrame(capture);
+        frameIndex++;
+    }
+
+#ifdef WRITE_RESULT_TO_MP4
+    cvReleaseVideoWriter(&wrVideo);
+#endif
+}
 
 RecognizeResult *getRecognizeResult(int trackId) {
     for (list<RecognizeResult>::iterator it = sResults.begin(); it != sResults.end(); ++it) {

@@ -271,17 +271,14 @@ namespace ali_face_engine {
 
     const int FACE_POINT_NUM = 51;
 
-    /**
-     * @brief [EN] face info
-     * @brief [中文] 人脸信息
-    */
     class DLL_API Face {
     public:
-        int trackId;///< [EN] face trackId [中文] 人脸trackId
-        Rect rect;///< [EN] face rect [中文] 人脸框
-        Pose pose;///< [EN] face pose [中文] 人脸姿态
-        FacePoint facePoints[FACE_POINT_NUM];///< [EN] face point [中文] 人脸关键点
-        Attribute attribute;///< [EN] face attribute [中文] 人脸属性
+        int trackId;
+        int confidence;
+        Rect rect;
+        Pose pose;
+        FacePoint facePoints[FACE_POINT_NUM];
+        Attribute attribute;
 
         Face();
     };

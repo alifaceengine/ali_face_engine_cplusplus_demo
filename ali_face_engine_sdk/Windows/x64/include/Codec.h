@@ -99,6 +99,12 @@ namespace ali_face_engine {
 
         static void nv21Rotate270InPlace(unsigned char *src, int width, int height);
 
+        static void rgbRotate90(unsigned char *src, int width, int height, unsigned char *dest);
+
+        static void rgbRotate180(unsigned char *src, int width, int height, unsigned char *dest);
+
+        static void rgbRotate270(unsigned char *src, int width, int height, unsigned char *dest);
+
         static void jpegToRGB888(unsigned char *jpeg, int jpegLen, unsigned char *&rgb, int &width, int &height);
 
         static void jpegToBGR888(unsigned char *jpeg, int jpegLen, unsigned char *&bgr, int &width, int &height);
@@ -119,6 +125,8 @@ namespace ali_face_engine {
         static bool isPng(unsigned char *data, int len);
 
         static bool isBMP(unsigned char *data, int len);
+
+        static string getJpegOrientation(unsigned char *jpeg, int jpegLen);
 
         static void cropRGB(unsigned char *src, int srcWidth, int srcHeight, int srcChl, Region &destRegion,
                             unsigned char *&dest);

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <sys/time.h>
 
 #include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
@@ -18,13 +20,7 @@ using namespace cv;
 using namespace ali_face_engine;
 using namespace std;
 
-static string PICTURE_ROOT = "../pictures/";
-
-static int detectPicture();
-
 static int detectVideo();
-
-static int detectMP4();
 
 static void printTextToWindow(IplImage *frame, char *display_text, int x, int y);
 
@@ -52,78 +48,11 @@ int main() {
     //sFaceDetect = FaceDetect::createInstance(CLOUD);
     LOG(TAG, "sFaceDetect(%p)", sFaceDetect);
 
-    //step 4: detectPicture
-    //detectPicture();
-
-    //step 5: detectVideo
-    //detectVideo();
-
-    detectMP4();
+    //step 4: detectVideo
+    detectVideo();
 
     FaceDetect::deleteInstance(sFaceDetect);
     return 0;
-}
-
-int detectPicture() {
-    unsigned char *data = 0;
-    int dataLen = 0;
-    loadFile(data, dataLen, (char *) (PICTURE_ROOT + "fanbingbing_with_glass.jpg").c_str());
-
-    Image image;
-    image.data = data;
-    image.format = ImageFormat_UNKNOWN;
-    image.dataLen = dataLen;
-
-    list <Face> faceList;
-    DetectParameter parameter = sFaceDetect->getPictureParameter();
-    parameter.checkQuality = true;
-    parameter.checkLiveness = true;
-    parameter.checkAge = true;
-    parameter.checkGender = true;
-    parameter.checkExpression = true;
-    parameter.checkGlass = true;
-
-    sFaceDetect->setPictureParameter(parameter);
-    int status = sFaceDetect->detectPicture(image, faceList);
-
-    if (status != OK) {
-        LOG(TAG, "detectPicture error(%d)", status);
-        if (image.data) {
-            free(image.data);
-            image.data = 0;
-        }
-        return status;
-    }
-
-    LOG(TAG, "detectPicture faceNum(%d)", faceList.size());
-    for (list<Face>::iterator it = faceList.begin(); it != faceList.end(); ++it) {
-        LOG(TAG, "detectPicture faces[%d] quality(%d) liveness(%d) age(%d) gender(%d) expression(%d) glass(%d)",
-            it->trackId, it->attribute.quality.score, it->attribute.liveness.score, it->attribute.age,
-            it->attribute.gender, it->attribute.expression, it->attribute.glass);
-    }
-
-#if 1
-    Image rgbImage = Codec::toBGR888(image);
-    Tools::drawFaceRect(rgbImage, faceList, 0xFF0000);
-    Tools::drawFacePoint(rgbImage, faceList, 0x00FF00);
-
-    cv::Mat yuvImg;
-    yuvImg.create(rgbImage.height, rgbImage.width, CV_8UC3);
-    memcpy(yuvImg.data, rgbImage.data, rgbImage.width * rgbImage.height * 3);
-
-    float scale = 1.0;
-    Size dsize = Size(yuvImg.cols * scale, yuvImg.rows * scale);
-    Mat image2 = Mat(dsize, CV_32S);
-    resize(yuvImg, image2, dsize);
-
-    cv::imshow("yuv", image2);
-    waitKey(0);
-#endif
-
-    if (image.data) {
-        free(image.data);
-        image.data = 0;
-    }
 }
 
 static int detectVideo() {
@@ -132,6 +61,7 @@ static int detectVideo() {
     parameter.checkQuality = false;
     parameter.checkLiveness = false;
     sFaceDetect->setVideoParameter(parameter);
+
     while (1) {
         Mat previewFrame;
         capture >> previewFrame;
@@ -142,8 +72,15 @@ static int detectVideo() {
         image.height = previewFrame.rows;
         image.format = BGR888;
 
-        list <Face> faceList;
+        struct timeval tv;
+        gettimeofday(&tv, 0);
+
+        list<Face> faceList;
         sFaceDetect->detectVideo(image, faceList);
+
+        struct timeval tv2;
+        gettimeofday(&tv2, 0);
+        LOG(TAG, "detectVideo cost(%d)", ((tv2.tv_sec - tv.tv_sec) * 1000 + (tv2.tv_usec - tv.tv_usec) / 1000));
 
         for (list<Face>::iterator it = faceList.begin(); it != faceList.end(); ++it) {
             printf("detectVideo trackId(%d) rect(%d,%d,%d,%d)\n",
@@ -159,66 +96,6 @@ static int detectVideo() {
         imshow("video", previewFrame);
         waitKey(1);
     }
-}
-
-int detectMP4() {
-    DetectParameter parameter = sFaceDetect->getVideoParameter();
-    parameter.checkQuality = true;
-    parameter.checkLiveness = false;
-    sFaceDetect->setVideoParameter(parameter);
-
-    IplImage *frame = NULL;
-    CvCapture *capture = NULL;
-    capture = cvCreateFileCapture("/Users/junyuan.hjy/Downloads/VID-20190318-WA0011.mp4");
-    frame = cvQueryFrame(capture);
-
-    cvNamedWindow("frame");
-    int frameIndex = 0;
-    while (frame) {
-        LOG(TAG, "frame(%d): size(%dx%d) frame->imageSize=%d depth=%d widthStep=%d nChannels=%d nSize=%d", frameIndex,
-            frame->width, frame->height, frame->imageSize, frame->depth, frame->widthStep, frame->nChannels,
-            frame->nSize);
-
-        if (frameIndex < 0) {
-            frame = cvQueryFrame(capture);
-            frameIndex++;
-            continue;
-        }
-
-        if (frameIndex == 1000) {
-            //break;
-        }
-
-        Image image;
-        image.data = (unsigned char *) frame->imageData;
-        image.width = frame->widthStep / 3;
-        image.height = frame->height;
-        image.format = BGR888;
-
-        list <Face> faceList;
-        int status = sFaceDetect->detectVideo(image, faceList);
-
-        int i = 0;
-        for (list<Face>::iterator it = faceList.begin(); it != faceList.end(); ++it) {
-            LOG(TAG, "detectVideo faces[%d] confidence(%d) quality(%d) liveness(%d) image(%p) yaw=%f", i,
-                it->confidence, it->attribute.quality.score, it->attribute.liveness.score, image.data, it->pose.yaw);
-            Tools::drawFaceRect(image, *it, 0xFF0000);
-
-            char display_text[100] = {0};
-            sprintf(display_text, "conf:%d, quality:%d", it->confidence, it->attribute.quality.score);
-
-            printTextToWindow(frame, display_text, it->rect.left, it->rect.top + 10);
-            i++;
-        }
-
-        cvShowImage("frame", frame);
-        cvWaitKey(1);
-
-        frame = cvQueryFrame(capture);
-        frameIndex++;
-    }
-
-    return 0;
 }
 
 void printTextToWindow(IplImage *frame, char *display_text, int x, int y) {

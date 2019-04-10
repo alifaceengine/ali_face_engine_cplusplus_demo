@@ -225,7 +225,8 @@ namespace ali_face_engine {
 
     const int GROUP_NAME_MAX_SIZE = 100;
     const int PERSON_NAME_MAX_SIZE = 50;
-    const int FEATURE_ID_MAX_SIZE = 50;
+    const int FEATURE_NAME_MAX_SIZE = 50;
+    const int TAG_MAX_SIZE = 1000;
 
     /**
      * @brief [EN] face recognize result
@@ -233,10 +234,10 @@ namespace ali_face_engine {
     */
     class DLL_API RecognizeResult {
     public:
-        int trackId;///< [EN] face trackId [中文] 对应的人脸trackId
-        string personId;///< [EN] person id [中文] 人编号
-        string personName;///< [EN] person name [中文] 人姓名
-        float similarity;///< [EN] similarity [中文] 相似度
+        int trackId;
+        string personId;
+        string personName;
+        float similarity;
 
         RecognizeResult();
     };
@@ -283,41 +284,30 @@ namespace ali_face_engine {
         Face();
     };
 
-    /**
-     * @brief [EN] face feature
-     * @brief [中文] 人脸特征
-    */
     class DLL_API Feature {
     public:
-        string id;///< [EN] feature id [中文] 人脸特征编号
-        string name;///< [EN] feature name [中文] 人脸特征名称
-        string feature;///< [EN] feature string [中文] 人脸特征字符串
+        string id;
+        string name;
+        string feature;
 
         Feature();
     };
 
-    /**
-     * @brief [EN] person info
-     * @brief [中文] 人的信息
-    */
     class DLL_API Person {
     public:
         string id;
         string name;
-        list<Feature> features;///< [EN] person feature array [中文] 人的特征数组
+        string tag;
+        list<Feature> features;
 
         Person();
     };
 
-    /**
-     * @brief [EN] group info
-     * @brief [中文] 组信息
-    */
     class DLL_API Group {
     public:
         string id;
-        string name;///< [EN] group name [中文] 组的名字
-        enum ModelType modelType;///< [EN] feature model type [中文] 特征模型类型
+        string name;
+        enum ModelType modelType;
 
         Group();
     };

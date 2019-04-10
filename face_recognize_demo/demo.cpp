@@ -154,7 +154,7 @@ int main() {
 
 int addPersonsAndFeatures() {
     char personName[PERSON_NAME_MAX_SIZE] = {0};
-    char featureName[FEATURE_ID_MAX_SIZE] = {0};
+    char featureName[FEATURE_NAME_MAX_SIZE] = {0};
 
     for (int i = 0; i < BASE_PERSONS_NUM; i++) {
         memset(personName, 0, sizeof(personName));

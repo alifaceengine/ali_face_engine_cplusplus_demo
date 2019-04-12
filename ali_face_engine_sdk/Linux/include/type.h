@@ -204,12 +204,6 @@ namespace ali_face_engine {
         GLASS_YES
     };
 
-    /**
-     * @brief [EN] face detect parameter
-     * @brief [中文] 人脸检测参数
-     * @see setPictureParameter
-     * @see setVideoParameter
-    */
     class DLL_API DetectParameter {
     public:
         bool checkQuality;

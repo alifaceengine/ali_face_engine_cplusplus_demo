@@ -6,6 +6,7 @@
 #include <opencv2/opencv.hpp>
 
 #include "FaceEngine.h"
+#include "../common.h"
 
 #ifdef WIN32
 #define LOG(TAG, fmt, args) printf("[%s] : " fmt "\n", TAG, ##args)
@@ -34,21 +35,21 @@ int main() {
     enableDebug(true);
     //step 1: authorize or enable debug
     LOG(TAG, "version(%s)", getVersion());
-    int status = authorize(
-            "eyJ2ZW5kb3JJZCI6ImNlc2hpX3ZlbmRvciIsInJvbGUiOjEsImNvZGUiOiJFOEUyNzE1NEY3QjYxMDQ3QjQ0RUNDN0IyOUJFM0ZFQiIsImV4cGlyZSI6IjIwMTkwNjMwIiwidHlwZSI6MX0=");
-    LOG(TAG, "authorize(%d)", status);
+    int status = authorize(KEY);
 
-    //step 2: set Cloud addr and account if you using CloudServer
-    //setCloudAddr("127.0.0.1", 8080);
-    setCloudAddr("101.132.89.177", 15000);
-    setCloudLoginAccount("admin", "admin");
+    if (status != OK) {
+        LOG(TAG, "authorize error(%d) key(%s)", status, KEY);
+        return 0;
+    } else {
+        LOG(TAG, "authorize ok key(%s)", KEY);
+    }
 
-    //step 3: create FaceVerify Instance (TERMINAL or CLOUD)
+    //step 2: create FaceVerify Instance (TERMINAL or CLOUD)
     sFaceDetect = FaceDetect::createInstance(TERMINAL);
     //sFaceDetect = FaceDetect::createInstance(CLOUD);
     LOG(TAG, "sFaceDetect(%p)", sFaceDetect);
 
-    //step 4: detectPicture
+    //step 3: detectPicture
     detectPicture();
 
     FaceDetect::deleteInstance(sFaceDetect);
@@ -65,7 +66,6 @@ int detectPicture() {
     image.format = ImageFormat_UNKNOWN;
     image.dataLen = dataLen;
 
-    list<Face> faceList;
     DetectParameter parameter = sFaceDetect->getPictureParameter();
     parameter.checkQuality = true;
     parameter.checkLiveness = true;
@@ -75,6 +75,8 @@ int detectPicture() {
     parameter.checkGlass = true;
 
     sFaceDetect->setPictureParameter(parameter);
+
+    list <Face> faceList;
     int status = sFaceDetect->detectPicture(image, faceList);
 
     if (status != OK) {

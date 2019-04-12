@@ -96,7 +96,7 @@ int main() {
     }
     LOG("createGroup OK, id(%s) name(%s) modelType(%d)", sGroup.id.c_str(), sGroup.name.c_str(), sGroup.modelType);
 
-#if 0
+#if 1
     //step 5: addPersonsAndFeatures
     status = addPersonsAndFeatures();
     if (status != OK) {
@@ -158,7 +158,7 @@ int addFeature(char *personId, char *featureName, const char *filePath) {
     image.format = ImageFormat_UNKNOWN;
     image.dataLen = dataLen;
 
-    list<Face> faces;
+    list <Face> faces;
     int status = sFaceDetect->detectPicture(image, faces);
 
     if (status != OK || faces.size() == 0) {
@@ -187,7 +187,7 @@ int addFeature(char *personId, char *featureName, const char *filePath) {
 
 static RecognizeResult *getRecognizeResult(int trackId);
 
-static list<RecognizeResult> sResults;
+static list <RecognizeResult> sResults;
 
 class RecognizeVideoListenerImp : public FaceRecognize::RecognizeVideoListener {
 public:
@@ -199,7 +199,7 @@ public:
 
     }
 
-    virtual void onRecognized(Image &image, list<RecognizeResult> results) {
+    virtual void onRecognized(Image &image, list <RecognizeResult> results) {
         LOG("");
         sResults = results;
         int i = 0;
@@ -210,7 +210,7 @@ public:
         }
     }
 
-    virtual void onVerified(Image &image, list<VerifyResult> results) {
+    virtual void onVerified(Image &image, list <VerifyResult> results) {
         LOG("");
     }
 };
@@ -232,7 +232,7 @@ static int recognizeVideo() {
         image.format = BGR888;
         image.rotation = ANGLE_0;
 
-        list<Face> faceList;
+        list <Face> faceList;
         int statusa = sFaceRecognize->recognizeVideo(image, faceList);
 
         LOG("recognizeVideo faceList:%d statusa=%d", faceList.size(), statusa);

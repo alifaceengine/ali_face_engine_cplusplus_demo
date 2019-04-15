@@ -29,6 +29,8 @@ namespace ali_face_engine {
 
         virtual int getGroup(const string &groupId, Group &group) = 0;
 
+        virtual int getGroupByName(const string &groupName, Group &group) = 0;
+
         virtual int getAllGroups(list<Group> &groupList) = 0;
 
         virtual int addPerson(const string &groupId, Person &person) = 0;
@@ -40,6 +42,8 @@ namespace ali_face_engine {
         virtual int updatePerson(const string &personId, Person &person) = 0;
 
         virtual int getPerson(const string &personId, Person &person) = 0;
+
+        virtual int getPersonByName(const string &groupId, const string &personName, Person &person) = 0;
 
         virtual int getAllPersons(const string &groupId, list<Person> &personList) = 0;
 

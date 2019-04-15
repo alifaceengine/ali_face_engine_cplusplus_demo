@@ -222,40 +222,29 @@ namespace ali_face_engine {
     const int FEATURE_NAME_MAX_SIZE = 50;
     const int TAG_MAX_SIZE = 1000;
 
-    /**
-     * @brief [EN] face recognize result
-     * @brief [中文] 人脸识别结果
-    */
     class DLL_API RecognizeResult {
     public:
         int trackId;
         string personId;
         string personName;
+        string personTag;
         float similarity;
 
         RecognizeResult();
     };
 
-    /**
-     * @brief [EN] face verify result
-     * @brief [中文] 人脸比对结果
-    */
     class DLL_API VerifyResult {
     public:
-        int trackId;///< [EN] face trackId [中文] 对应的人脸trackId
-        float similarity;///< [EN] similarity [中文] 相似度
+        int trackId;
+        float similarity;
 
         VerifyResult();
     };
 
-    /**
-     * @brief [EN] face attribute
-     * @brief [中文] 人脸属性
-    */
     class DLL_API Attribute {
     public:
-        Quality quality;///< [EN] face quality [中文] 人脸质量
-        Liveness liveness;///< [EN] face liveness [中文] 人脸活体
+        Quality quality;
+        Liveness liveness;
         int age;
         enum Gender gender;
         enum Expression expression;
@@ -302,6 +291,7 @@ namespace ali_face_engine {
         string id;
         string name;
         enum ModelType modelType;
+        string tag;
 
         Group();
     };

@@ -12,6 +12,7 @@
 #include "FaceRegister.h"
 #include "Tools.h"
 #include "Codec.h"
+#include "FaceEngineConfig.h"
 
 #ifdef WIN32
 #define DLL_API __declspec(dllexport)

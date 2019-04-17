@@ -37,14 +37,17 @@ int main() {
 
 int detectMP4() {
     DetectParameter parameter = sFaceDetect->getVideoParameter();
-    parameter.checkQuality = false;
+    parameter.checkQuality = true;
     parameter.checkLiveness = false;
     sFaceDetect->setVideoParameter(parameter);
 
     IplImage *frame = NULL;
     CvCapture *capture = NULL;
-    capture = cvCreateFileCapture("/Users/junyuan.hjy/Downloads/VID-20190412-WA0014.mp4");
+    capture = cvCreateFileCapture("yourpath.mp4");
     frame = cvQueryFrame(capture);
+
+    //save result to mp4
+    CvVideoWriter *writer = 0;
 
     cvNamedWindow("frame");
     int frameIndex = 0;
@@ -69,17 +72,49 @@ int detectMP4() {
             Tools::drawFaceRect(image, *it, 0xFF0000);
 
             char display_text[100] = {0};
-            sprintf(display_text, "conf:%d, quality:%d", it->confidence, it->attribute.quality.score);
+            sprintf(display_text, "id:%d, conf:%d, quality:%d", it->trackId, it->confidence,
+                    it->attribute.quality.score);
 
             printTextToWindow(frame, display_text, it->rect.left, it->rect.top + 10);
             i++;
         }
 
-        cvShowImage("frame", frame);
+
+        //display
+        IplImage *display = frame;
+        float scale = 0.7;
+        if (scale != 1.0) {
+            CvSize sz;
+            sz.width = frame->width * scale;
+            sz.height = frame->height * scale;
+            display = cvCreateImage(sz, frame->depth, frame->nChannels);
+            cvResize(frame, display, CV_INTER_CUBIC);
+        }
+
+        cvShowImage("frame", display);
+
+        //save to mp4
+        if (true) {
+            if (!writer) {
+                char *writePath = "./result.mp4";
+                writer = cvCreateVideoWriter(
+                        writePath,
+                        CV_FOURCC('P', 'I', 'M', '1'),
+                        24,
+                        cvGetSize(frame)
+                );
+            }
+            cvWriteFrame(writer, frame);
+        }
+
         cvWaitKey(1);
 
         frame = cvQueryFrame(capture);
         frameIndex++;
+    }
+
+    if (writer) {
+        cvReleaseVideoWriter(&writer);
     }
 
     return 0;

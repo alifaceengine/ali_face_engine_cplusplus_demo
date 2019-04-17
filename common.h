@@ -13,7 +13,7 @@ static char *KEY = "eyJ2ZW5kb3JJZCI6ImNlc2hpX3ZlbmRvciIsInJvbGUiOjEsImNvZGUiOiJF
 
 using namespace cv;
 
-void printTextToWindow(IplImage *frame, char *display_text, int x, int y) {
+void printTextToWindow(IplImage *frame, char *display_text, int x, int y, int color) {
     Mat previewFrame = cvarrToMat(frame);
     std::string text = display_text;
     int font_face = cv::FONT_HERSHEY_COMPLEX;
@@ -27,10 +27,12 @@ void printTextToWindow(IplImage *frame, char *display_text, int x, int y) {
     cv::Point origin;
     origin.x = x;
     origin.y = y;
-    cv::putText(previewFrame, text, origin, font_face, font_scale, cv::Scalar(0, 255, 0), thickness, 8, 0);
+
+    cv::putText(previewFrame, text, origin, font_face, font_scale,
+                cv::Scalar((color) & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF), thickness, 8, 0);
 }
 
-void printTextToWindow(Mat *previewFrame, char *display_text, int x, int y) {
+void printTextToWindow(Mat *previewFrame, char *display_text, int x, int y, int color) {
     std::string text = display_text;
     int font_face = cv::FONT_HERSHEY_COMPLEX;
     double font_scale = 0.8;
@@ -43,7 +45,8 @@ void printTextToWindow(Mat *previewFrame, char *display_text, int x, int y) {
     cv::Point origin;
     origin.x = x;
     origin.y = y;
-    cv::putText(*previewFrame, text, origin, font_face, font_scale, cv::Scalar(0, 255, 0), thickness, 8, 0);
+    cv::putText(*previewFrame, text, origin, font_face, font_scale,
+                cv::Scalar((color) & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF), thickness, 8, 0);
 }
 
 int loadFile(unsigned char *&buf, int &len, char *path) {

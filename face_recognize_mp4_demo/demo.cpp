@@ -63,7 +63,7 @@ int main() {
 
     sFaceDetect = FaceDetect::createInstance(TERMINAL);
     LOG(TAG, "sFaceDetect(%p)", sFaceDetect);
-    if (!sFaceRecognize) {
+    if (!sFaceDetect) {
         LOG(TAG, "FaceDetect::createInstance error");
         return 0;
     }

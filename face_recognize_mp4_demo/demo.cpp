@@ -261,6 +261,9 @@ static int recognizeMP4() {
                     Tools::drawFaceRect(image, *it, 0xFF0000);
                 }
             } else {
+                char display_text[100] = {0};
+                sprintf(display_text, "trackId:%d, no body in db", it->trackId);
+                printTextToWindow(frame, display_text, it->rect.left, it->rect.top + 10, 0xFF0000);
                 Tools::drawFaceRect(image, *it, 0xFF0000);
             }
         }
@@ -283,7 +286,7 @@ static int recognizeMP4() {
 
 
         //save to mp4
-        if (true) {
+        if (false) {
             if (!writer) {
                 char *writePath = "./result.avi";
                 writer = cvCreateVideoWriter(writePath, CV_FOURCC('D', 'I', 'V', '3'), 24, cvGetSize(frame)

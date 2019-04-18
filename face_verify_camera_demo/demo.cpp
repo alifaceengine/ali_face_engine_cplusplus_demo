@@ -116,12 +116,13 @@ static int verifyVideo() {
             }
             char display_text[100] = {0};
             sprintf(display_text, "%f", similarity);
-            printTextToWindow(&previewFrame, display_text, it->rect.left, it->rect.top);
 
             if (similarity >= 70) {
                 Tools::drawFaceRect(image, *it, 0x0000FF);
+                printTextToWindow(&previewFrame, display_text, it->rect.left, it->rect.top, 0x00FF00);
             } else {
                 Tools::drawFaceRect(image, *it, 0xFF0000);
+                printTextToWindow(&previewFrame, display_text, it->rect.left, it->rect.top, 0xFF0000);
             }
         }
 

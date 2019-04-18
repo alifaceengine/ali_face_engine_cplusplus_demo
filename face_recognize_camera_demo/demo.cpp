@@ -2,21 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <opencv2/highgui.hpp>
-#include <opencv2/opencv.hpp>
-
 #include "FaceEngine.h"
+#include "../common.h"
 
-#ifdef WIN32
-#define LOG(fmt, ...) printf(fmt "\n", __VA_ARGS__)
-#else
-#define LOG(fmt, args...) printf(fmt "\n", ##args)
-#endif
-
-
-using namespace cv;
 using namespace ali_face_engine;
 using namespace std;
+
+#define TAG "FaceRecognizeCameraDemo"
 
 static string PICTURE_ROOT = "../pictures/";
 
@@ -42,21 +34,19 @@ static int addFeature(char *personName, char *featureId, const char *filePath);
 
 static int recognizeVideo();
 
-static int loadFile(unsigned char *&buf, int &len, char *path);
-
-int saveFile(char *buf, int len, char *path);
-
-static const char *GROUP_NAME = "group_test";
+static const char *GROUP_NAME = "SMALL_2000";
 static Group sGroup;
 
 int main() {
     //step 1: authorize or enable debug
-    LOG("version(%s)", getVersion());
-    int status = authorize(
-            "eyJ2ZW5kb3JJZCI6ImNlc2hpX3ZlbmRvciIsInJvbGUiOjEsImNvZGUiOiJFOEUyNzE1NEY3QjYxMDQ3QjQ0RUNDN0IyOUJFM0ZFQiIsImV4cGlyZSI6IjIwMTkwNjMwIiwidHlwZSI6MX0=");
-    LOG("authorize(%d)", status);
-    setPersistencePath("./");
     enableDebug(true);
+    int status = authorize(KEY);
+    if (status != OK) {
+        LOG(TAG, "authorize error(%d) key(%s)", status, KEY);
+        return 0;
+    } else {
+        LOG(TAG, "authorize ok key(%s)", KEY);
+    }
 
     //step 2: set Cloud addr and account if you using CloudServer
     setCloudAddr("101.132.89.177", 15000);
@@ -64,24 +54,24 @@ int main() {
 
     //step 3: create FaceRegister Instance
     sFaceRegister = FaceRegister::createInstance();
-    LOG("sFaceRegister(%p)", sFaceRegister);
+    LOG(TAG, "sFaceRegister(%p)", sFaceRegister);
     if (!sFaceRegister) {
-        LOG("FaceRegister::createInstance error");
+        LOG(TAG, "FaceRegister::createInstance error");
         return 0;
     }
 
     sFaceRecognize = FaceRecognize::createInstance(TERMINAL);
     //sFaceRecognize = FaceRecognize::createInstance(CLOUD);
-    LOG("sFaceRecognize(%p)", sFaceRecognize);
+    LOG(TAG, "sFaceRecognize(%p)", sFaceRecognize);
     if (!sFaceRecognize) {
-        LOG("FaceRecognize::createInstance error");
+        LOG(TAG, "FaceRecognize::createInstance error");
         return 0;
     }
 
     sFaceDetect = FaceDetect::createInstance(TERMINAL);
-    LOG("sFaceDetect(%p)", sFaceDetect);
+    LOG(TAG, "sFaceDetect(%p)", sFaceDetect);
     if (!sFaceRecognize) {
-        LOG("FaceDetect::createInstance error");
+        LOG(TAG, "FaceDetect::createInstance error");
         return 0;
     }
 
@@ -91,19 +81,19 @@ int main() {
     //sGroup.modelType = MODEL_BIG;
     status = sFaceRegister->createGroup(sGroup);
     if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
-        LOG("createGroup error(%d)", status);
+        LOG(TAG, "createGroup error(%d)", status);
         return 0;
     }
-    LOG("createGroup OK, id(%s) name(%s) modelType(%d)", sGroup.id.c_str(), sGroup.name.c_str(), sGroup.modelType);
+    LOG(TAG, "createGroup OK, id(%s) name(%s) modelType(%d)", sGroup.id.c_str(), sGroup.name.c_str(), sGroup.modelType);
 
 #if 1
     //step 5: addPersonsAndFeatures
     status = addPersonsAndFeatures();
     if (status != OK) {
-        LOG("addPersonsAndFeatures error(%d)", status);
+        LOG(TAG, "addPersonsAndFeatures error(%d)", status);
         return 0;
     }
-    LOG("addPersonsAndFeatures OK");
+    LOG(TAG, "addPersonsAndFeatures OK");
 #endif
 
     sFaceRecognize->setGroupId(sGroup.id);
@@ -112,10 +102,10 @@ int main() {
     status = recognizeVideo();
     //status = verifyVideo();
     if (status != OK) {
-        LOG("recognizeVideo error(%d)", status);
+        LOG(TAG, "recognizeVideo error(%d)", status);
         return 0;
     }
-    LOG("recognizeVideo OK");
+    LOG(TAG, "recognizeVideo OK");
 
     return 0;
 }
@@ -135,13 +125,13 @@ int addPersonsAndFeatures() {
         person.name = personName;
         int status = sFaceRegister->addPerson(sGroup.id, person);
         if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
-            LOG("addPerson[%d] %s, error(%d)", i, personName, status);
+            LOG(TAG, "addPerson[%d] %s, error(%d)", i, personName, status);
             return status;
         }
 
         status = addFeature((char *) person.id.c_str(), featureName, (PICTURE_ROOT + BASE_PERSONS[i]).c_str());
         if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
-            LOG("addFeature[%d] %s, status(%d)", i, featureName, status);
+            LOG(TAG, "addFeature[%d] %s, status(%d)", i, featureName, status);
             return status;
         }
     }
@@ -162,14 +152,14 @@ int addFeature(char *personId, char *featureName, const char *filePath) {
     int status = sFaceDetect->detectPicture(image, faces);
 
     if (status != OK || faces.size() == 0) {
-        LOG("detectPicture error(%d)", status);
+        LOG(TAG, "detectPicture error(%d)", status);
         return status;
     }
 
     string feature;
     status = sFaceRegister->extractFeature(image, *faces.begin(), sGroup.modelType, feature);
     if (status != OK) {
-        LOG("extractFeature error(%d)", status);
+        LOG(TAG, "extractFeature error(%d)", status);
         return status;
     }
 
@@ -178,7 +168,7 @@ int addFeature(char *personId, char *featureName, const char *filePath) {
     feature1.feature = feature;
     status = sFaceRegister->addFeature(personId, feature1);
     if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
-        LOG("addFeature error(%d)", status);
+        LOG(TAG, "addFeature error(%d)", status);
         return status;
     }
 
@@ -200,23 +190,23 @@ public:
     }
 
     virtual void onRecognized(Image &image, list <RecognizeResult> results) {
-        LOG("");
+        LOG(TAG, "");
         sResults = results;
         int i = 0;
         for (list<RecognizeResult>::iterator it = results.begin(); it != results.end(); ++it) {
-            LOG("onRecognized[%d] BaseName(%s)  similarity(%f)", i,
+            LOG(TAG, "onRecognized[%d] BaseName(%s)  similarity(%f)", i,
                 it->personName.c_str(), it->similarity);
             i++;
         }
     }
 
     virtual void onVerified(Image &image, list <VerifyResult> results) {
-        LOG("");
+        LOG(TAG, "");
     }
 };
 
 static int recognizeVideo() {
-    LOG("recognizeVideo");
+    LOG(TAG, "recognizeVideo");
     FaceRecognize::RecognizeVideoListener *listener = new RecognizeVideoListenerImp();
     sFaceRecognize->setRecognizeVideoListener(listener);
 
@@ -233,36 +223,29 @@ static int recognizeVideo() {
         image.rotation = ANGLE_0;
 
         list <Face> faceList;
-        int statusa = sFaceRecognize->recognizeVideo(image, faceList);
+        int error = sFaceRecognize->recognizeVideo(image, faceList);
 
-        LOG("recognizeVideo faceList:%d statusa=%d", faceList.size(), statusa);
+        LOG(TAG, "recognizeVideo faceList:%d error=%d", faceList.size(), error);
 
         for (list<Face>::iterator it = faceList.begin(); it != faceList.end(); ++it) {
             RecognizeResult *result = getRecognizeResult(it->trackId);
             if (result) {
-                char similarity_text[100] = {0};
-                sprintf(similarity_text, "%s:%f", result->personName.c_str(), result->similarity);
-                std::string text = similarity_text;
-                int font_face = cv::FONT_HERSHEY_COMPLEX;
-                double font_scale = 1;
-                int thickness = 2;
-                int baseline;
-                //获取文本框的长宽
-                cv::Size text_size = cv::getTextSize(text, font_face, font_scale, thickness, &baseline);
+                char display_text[100] = {0};
+                sprintf(display_text, "trackId:%d, %s:%f", it->trackId, result->personName.c_str(),
+                        result->similarity);
 
-                //将文本框居中绘制
-                cv::Point origin;
-                origin.x = it->rect.left + 100;
-                origin.y = it->rect.top + text_size.height + 10;
                 if (result->similarity >= 70) {
+                    printTextToWindow(&previewFrame, display_text, it->rect.left, it->rect.top + 10, 0x00FF00);
                     Tools::drawFaceRect(image, *it, 0x00FF00);
-                    cv::putText(previewFrame, text, origin, font_face, font_scale, cv::Scalar(0, 255, 0), thickness,
-                                8, 0);
                 } else {
+                    printTextToWindow(&previewFrame, display_text, it->rect.left, it->rect.top + 10, 0xFF0000);
                     Tools::drawFaceRect(image, *it, 0xFF0000);
-                    cv::putText(previewFrame, text, origin, font_face, font_scale, cv::Scalar(0, 0, 255), thickness,
-                                8, 0);
                 }
+            } else {
+                char display_text[100] = {0};
+                sprintf(display_text, "trackId:%d, no body in db", it->trackId);
+                printTextToWindow(&previewFrame, display_text, it->rect.left, it->rect.top + 10, 0xFF0000);
+                Tools::drawFaceRect(image, *it, 0xFF0000);
             }
         }
 
@@ -280,34 +263,4 @@ RecognizeResult *getRecognizeResult(int trackId) {
         }
     }
     return 0;
-}
-
-
-int saveFile(char *buf, int len, char *path) {
-    FILE *pf = fopen(path, "wb");
-    if (pf != NULL) {
-        fwrite(buf, sizeof(char), len, pf);
-        fclose(pf);
-        return 0;
-    }
-
-    return -1;
-}
-
-int loadFile(unsigned char *&buf, int &len, char *path) {
-    FILE *pf = fopen(path, "rb");
-    if (pf != NULL) {
-        fseek(pf, 0, SEEK_END);
-        len = ftell(pf);
-        buf = (unsigned char *) malloc(len);
-        fseek(pf, 0, SEEK_SET);
-        fread(buf, 1, len, pf);
-        fclose(pf);
-
-        return 0;
-    } else {
-        buf = NULL;
-        len = 0;
-        return -1;
-    }
 }

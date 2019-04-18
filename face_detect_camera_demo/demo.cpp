@@ -72,19 +72,19 @@ static int detectVideo() {
         LOG(TAG, "detectVideo cost(%d)", ((tv2.tv_sec - tv.tv_sec) * 1000 + (tv2.tv_usec - tv.tv_usec) / 1000));
 
         for (list<Face>::iterator it = faceList.begin(); it != faceList.end(); ++it) {
-            printf("detectVideo trackId(%d) rect(%d,%d,%d,%d)\n",
-                   it->trackId,
-                   it->rect.left,
-                   it->rect.top,
-                   it->rect.right,
-                   it->rect.bottom);
+            LOG(TAG, "detectVideo trackId(%d) rect(%d,%d,%d,%d)\n",
+                it->trackId,
+                it->rect.left,
+                it->rect.top,
+                it->rect.right,
+                it->rect.bottom);
             Tools::drawFaceRect(image, *it, 0xFF0000);
             Tools::drawFacePoint(image, *it, 0x00FF00);
 
             char display[1000] = {0};
             sprintf(display, "trackId : %d", it->trackId);
             sprintf(display, "%s, liveness : %d", display, it->attribute.liveness.score);
-            printTextToWindow(&previewFrame, display, it->rect.left, it->rect.top + 20);
+            printTextToWindow(&previewFrame, display, it->rect.left, it->rect.top + 20, 0x00FF00);
         }
 
         imshow("video", previewFrame);

@@ -75,7 +75,7 @@ int detectMP4() {
             sprintf(display_text, "id:%d, conf:%d, quality:%d", it->trackId, it->confidence,
                     it->attribute.quality.score);
 
-            printTextToWindow(frame, display_text, it->rect.left, it->rect.top + 10);
+            printTextToWindow(frame, display_text, it->rect.left, it->rect.top + 10, 0x00FF00);
             i++;
         }
 
@@ -94,14 +94,10 @@ int detectMP4() {
         cvShowImage("frame", display);
 
         //save to mp4
-        if (true) {
+        if (false) {
             if (!writer) {
-                char *writePath = "./result.mp4";
-                writer = cvCreateVideoWriter(
-                        writePath,
-                        CV_FOURCC('P', 'I', 'M', '1'),
-                        24,
-                        cvGetSize(frame)
+                char *writePath = "./result.avi";
+                writer = cvCreateVideoWriter(writePath, CV_FOURCC('D', 'I', 'V', '3'), 24, cvGetSize(frame)
                 );
             }
             cvWriteFrame(writer, frame);

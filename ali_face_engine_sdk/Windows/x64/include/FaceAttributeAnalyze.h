@@ -27,7 +27,7 @@ namespace ali_face_engine {
         static void deleteInstance(FaceAttributeAnalyze *&ins);
 
     public:
-        virtual void setFlag(int flag) = 0;
+        virtual int setFlag(int flag) = 0;
 
         virtual int getFlag() = 0;
 

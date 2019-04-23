@@ -36,7 +36,7 @@ static int recognizePicture(char *personName, const char *filePath);
 
 static int recognizePictures();
 
-static const char *GROUP_NAME = "group_test";
+static const char *GROUP_NAME = "SMALL_2000";
 static Group sGroup;
 
 int main() {

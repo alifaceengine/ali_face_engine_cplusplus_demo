@@ -3,12 +3,27 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
 
+#ifdef WIN32
+#else
+
+#include <sys/time.h>
+
+#endif
+
 static char *KEY = "eyJ2ZW5kb3JJZCI6ImNlc2hpX3ZlbmRvciIsInJvbGUiOjEsImNvZGUiOiJFOEUyNzE1NEY3QjYxMDQ3QjQ0RUNDN0IyOUJFM0ZFQiIsImV4cGlyZSI6IjIwMTkwNjMwIiwidHlwZSI6MX0=";
 
 #ifdef WIN32
 #define LOG(TAG, fmt, args) printf("[%s] : " fmt "\n", TAG, ##args)
 #else
-#define LOG(TAG, fmt, args...) printf("[%s] : " fmt "\n", TAG, ##args)
+#define LOG(TAG, fmt, args...) do{ \
+    struct timeval tv; \
+gettimeofday(&tv, 0); \
+struct tm *p = localtime(&tv.tv_sec); \
+    printf("%04d-%02d-%02d %02d:%02d:%02d.%03d I [%s] : " fmt "\n", \
+    1900 + p->tm_year, 1 + p->tm_mon, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, tv.tv_usec/1000,\
+    TAG, ##args);\
+}while(0)\
+
 #endif
 
 using namespace cv;

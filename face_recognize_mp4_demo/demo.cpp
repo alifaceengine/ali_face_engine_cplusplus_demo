@@ -215,7 +215,7 @@ static int recognizeMP4() {
 
     //draw roi
     ali_face_engine::Rect roi;
-    FaceEngineConfig::FD_ROI(roi);
+    //FaceEngineConfig::FD_ROI(roi);
 
 
     cvNamedWindow("frame");
@@ -262,7 +262,7 @@ static int recognizeMP4() {
                 }
             } else {
                 char display_text[100] = {0};
-                sprintf(display_text, "trackId:%d, no body in db", it->trackId);
+                sprintf(display_text, "trackId:%d, not recognized", it->trackId);
                 printTextToWindow(frame, display_text, it->rect.left, it->rect.top + 10, 0xFF0000);
                 Tools::drawFaceRect(image, *it, 0xFF0000);
             }
@@ -270,7 +270,7 @@ static int recognizeMP4() {
 
 
         //draw roi
-        Tools::drawFaceRect(image, roi, 0xFFFF00);
+        //Tools::drawFaceRect(image, roi, 0xFFFF00);
 
 
         //display

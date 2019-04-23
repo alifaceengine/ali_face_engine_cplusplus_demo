@@ -12,7 +12,6 @@
 #include "FaceRegister.h"
 #include "Tools.h"
 #include "Codec.h"
-#include "FaceEngineConfig.h"
 
 #ifdef WIN32
 #define DLL_API __declspec(dllexport)
@@ -42,6 +41,11 @@ namespace ali_face_engine {
 
     DLL_API void setPersistencePath(const char *path);
 
+    DLL_API void setConfigString(const char *key, const char *value);
+
+    DLL_API void setConfigInt(const char *key, const int value);
+
+    DLL_API void setConfigFloat(const char *key, const int value);
 
     //face
     DLL_API Face *newFace();

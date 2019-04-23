@@ -27,6 +27,8 @@ namespace ali_face_engine {
 
         static void drawFaceRect(Image *image, Face *face, int color);
 
+        static void drawFaceRect(Image &image, Rect &rect, int color);
+
         static void drawFaceRect(Image *image, Face *faces, int faceNum, int color);
 
         static void drawFacePoint(Image *image, Face *face, int color);

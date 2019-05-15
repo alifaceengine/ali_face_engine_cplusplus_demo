@@ -45,6 +45,8 @@ namespace ali_face_engine {
         virtual int
         recognizePicture(Image &image, list<Face> &faceList, list<RecognizeResult> &recognizeResultList) = 0;
 
+        virtual int recognizeFeature(string &feature, RecognizeResult &recognizeResult) = 0;
+
         virtual int verifyVideo(const string &personId, Image &image, list<Face> &faceList) = 0;
 
         virtual int verifyPicture(const string &personId, Image &image, list<Face> &faceList,

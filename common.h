@@ -1,7 +1,9 @@
 #pragma once
 
+#ifdef OPENCV
 #include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
+#endif
 
 #ifdef WIN32
 #else
@@ -26,6 +28,7 @@ struct tm *p = localtime(&tv.tv_sec); \
 
 #endif
 
+#ifdef OPENCV
 using namespace cv;
 
 void printTextToWindow(IplImage *frame, char *display_text, int x, int y, int color) {
@@ -63,6 +66,7 @@ void printTextToWindow(Mat *previewFrame, char *display_text, int x, int y, int 
     cv::putText(*previewFrame, text, origin, font_face, font_scale,
                 cv::Scalar((color) & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF), thickness, 8, 0);
 }
+#endif
 
 int loadFile(unsigned char *&buf, int &len, char *path) {
     FILE *pf = fopen(path, "rb");

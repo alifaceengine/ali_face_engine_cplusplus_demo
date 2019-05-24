@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <opencv2/highgui.hpp>
-#include <opencv2/opencv.hpp>
-
 #include "FaceEngine.h"
 #include "../common.h"
 
@@ -24,6 +21,7 @@ int main() {
     //step 1: authorize or enable debug
     LOG(TAG, "version(%s)", getVersion());
     int status = authorize(KEY);
+	setConfigInt("CFG_FD_NORM_SIZE", 320);
 
     if (status != OK) {
         LOG(TAG, "authorize error(%d) key(%s)", status, KEY);
@@ -83,7 +81,7 @@ int detectPicture() {
             it->attribute.gender, it->attribute.expression, it->attribute.glass);
     }
 
-#if 1
+#ifdef OPENCV
     Image rgbImage = Codec::toBGR888(image);
     Tools::drawFaceRect(rgbImage, faceList, 0xFF0000);
     Tools::drawFacePoint(rgbImage, faceList, 0x00FF00);

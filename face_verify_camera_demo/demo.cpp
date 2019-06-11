@@ -68,7 +68,7 @@ static int verifyVideo() {
     FaceVerify::VerifyVideoListener *listener = new VerifyVideoListenerImp();
     sFaceVerify->setVerifyVideoListener(listener);
 
-    Mat mat = imread((PICTURE_ROOT + "me.jpg").c_str(), IMREAD_COLOR);
+    Mat mat = imread((PICTURE_ROOT + "liudehua.jpg").c_str(), IMREAD_COLOR);
     if (mat.empty()) {
         LOG(TAG, "verifyVideo error, because imread liudehua.jpg");
         return FAILED;

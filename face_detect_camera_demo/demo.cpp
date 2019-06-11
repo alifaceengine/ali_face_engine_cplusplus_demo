@@ -42,12 +42,12 @@ static int detectVideo() {
     VideoCapture capture(0);
 
     DetectParameter parameter = sFaceDetect->getVideoParameter();
-    parameter.checkQuality = true;
-    parameter.checkLiveness = true;
-    parameter.checkAge = true;
-    parameter.checkGender = true;
-    parameter.checkExpression = true;
-    parameter.checkGlass = true;
+    parameter.checkQuality = false;
+    parameter.checkLiveness = false;
+    parameter.checkAge = false;
+    parameter.checkGender = false;
+    parameter.checkExpression = false;
+    parameter.checkGlass = false;
 
     sFaceDetect->setVideoParameter(parameter);
 
@@ -69,7 +69,8 @@ static int detectVideo() {
 
         struct timeval tv2;
         gettimeofday(&tv2, 0);
-        LOG(TAG, "detectVideo cost(%d)", ((tv2.tv_sec - tv.tv_sec) * 1000 + (tv2.tv_usec - tv.tv_usec) / 1000));
+        int cost = ((tv2.tv_sec - tv.tv_sec) * 1000 + (tv2.tv_usec - tv.tv_usec) / 1000);
+        LOG(TAG, "detectVideo cost(%d)", cost);
 
         for (list<Face>::iterator it = faceList.begin(); it != faceList.end(); ++it) {
             LOG(TAG, "detectVideo trackId(%d) rect(%d,%d,%d,%d)\n",

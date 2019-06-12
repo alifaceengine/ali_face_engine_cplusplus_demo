@@ -1,0 +1,6 @@
+Makefile
+CMakeFiles
+*.cmake
+CMakeCache.txt
+ali_face_engine_*.log
+.DS_Store

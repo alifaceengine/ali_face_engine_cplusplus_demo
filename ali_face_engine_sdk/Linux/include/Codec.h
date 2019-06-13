@@ -133,6 +133,9 @@ namespace ali_face_engine {
 
         static void resiseBilinearRGB(unsigned char *pSrc, int srcWidth, int srcHeight, int srcChl,
                                       unsigned char *&pDst, int dstWidth, int dstHeight, float &ratio);
+
+        static void alignRGB888(unsigned char *src, int srcWidth, int srcHeight, unsigned char *&dest, int &destWidth,
+                                int &destHeight, bool &isDestMalloced);
     };
 
 }

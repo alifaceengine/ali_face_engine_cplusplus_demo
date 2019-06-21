@@ -10,6 +10,7 @@
 #include "FaceRecognize.h"
 #include "FaceVerify.h"
 #include "FaceRegister.h"
+#include "FeatureExtract.h"
 #include "Tools.h"
 #include "Codec.h"
 
@@ -41,6 +42,8 @@ namespace ali_face_engine {
 
     DLL_API void setPersistencePath(const char *path);
 
+    DLL_API bool supportGPU();
+
     //version>=3.3.0
     DLL_API void setConfigString(const char *key, const char *value);
 
@@ -48,7 +51,7 @@ namespace ali_face_engine {
     DLL_API void setConfigInt(const char *key, const int value);
 
     //version>=3.3.0
-    DLL_API void setConfigFloat(const char *key, const int value);
+    DLL_API void setConfigFloat(const char *key, const float value);
 
     //face
     DLL_API Face *newFace();

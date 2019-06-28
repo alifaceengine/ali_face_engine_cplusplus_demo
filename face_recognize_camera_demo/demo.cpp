@@ -38,19 +38,14 @@ static const char *GROUP_NAME = "SMALL_2000";
 static Group sGroup;
 
 int main() {
-    //step 1: authorize or enable debug
-    enableDebug(true);
-    int status = authorize(KEY);
+    //step 1: set config path
+    int status = setPersistencePath(".");
     if (status != OK) {
-        LOG(TAG, "authorize error(%d) key(%s)", status, KEY);
+        LOG(TAG, "setPersistencePath error(%d) key(%s)", status);
         return 0;
     } else {
-        LOG(TAG, "authorize ok key(%s)", KEY);
+        LOG(TAG, "setPersistencePath ok key(%s)");
     }
-
-    //step 2: set Cloud addr and account if you using CloudServer
-    setCloudAddr("101.132.89.177", 15000);
-    setCloudLoginAccount("admin", "admin");
 
     //step 3: create FaceRegister Instance
     sFaceRegister = FaceRegister::createInstance();

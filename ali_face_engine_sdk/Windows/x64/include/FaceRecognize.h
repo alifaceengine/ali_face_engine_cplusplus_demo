@@ -26,13 +26,11 @@ namespace ali_face_engine {
         };
 
     public:
-        static FaceRecognize *createInstance(enum Mode mode = TERMINAL);
+        static FaceRecognize *createInstance(const string &groupName, enum Mode mode = TERMINAL);
 
         static void deleteInstance(FaceRecognize *&ins);
 
     public:
-
-        virtual int setGroupId(const string &groupId) = 0;
 
         virtual int reloadDB() = 0;
 

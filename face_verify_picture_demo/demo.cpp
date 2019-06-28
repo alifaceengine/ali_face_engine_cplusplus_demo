@@ -21,7 +21,7 @@ static int verifyDifferentPerson();
 
 int main() {
     //step 1: authorize or enable debug
-    enableDebug(false);
+    enableDebug(true);
     int status = authorize(KEY);
     if (status != OK) {
         LOG(TAG, "authorize error(%d) key(%s)", status, KEY);
@@ -29,6 +29,9 @@ int main() {
     } else {
         LOG(TAG, "authorize ok key(%s)", KEY);
     }
+
+    setCloudAddr("127.0.0.1", 8090);
+    setCloudLoginAccount("admin", "666666");
 
     //step 3: create FaceVerify Instance (TERMINAL or CLOUD)
     sFaceVerify = FaceVerify::createInstance(TERMINAL);

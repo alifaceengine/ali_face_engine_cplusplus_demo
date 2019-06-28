@@ -32,6 +32,8 @@ namespace ali_face_engine {
     DLL_API void setJavaVM(JavaVM *vm);
 #endif
 
+    DLL_API int setPersistencePath(const char *path);
+
     DLL_API int authorize(char *key);
 
     DLL_API void setCloudAddr(const char *ip, const int port);
@@ -39,8 +41,6 @@ namespace ali_face_engine {
     DLL_API void setCloudLoginAccount(const char *cId, const char *cSecret);
 
     DLL_API void enableDebug(const bool enable);
-
-    DLL_API void setPersistencePath(const char *path);
 
     DLL_API bool supportGPU();
 
@@ -52,6 +52,12 @@ namespace ali_face_engine {
 
     //version>=3.3.0
     DLL_API void setConfigFloat(const char *key, const float value);
+
+    DLL_API string getConfigString(const char *key, const char *defaultValue);
+
+    DLL_API int getConfigInt(const char *key, const int defaultValue);
+
+    DLL_API float getConfigFloat(const char *key, const float defaultValue);
 
     //face
     DLL_API Face *newFace();

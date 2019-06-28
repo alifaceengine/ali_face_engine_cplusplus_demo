@@ -79,9 +79,11 @@ int detectPicture() {
 
     LOG(TAG, "detectPicture faceNum(%d)", faceList.size());
     for (list<Face>::iterator it = faceList.begin(); it != faceList.end(); ++it) {
-        LOG(TAG, "detectPicture faces[%d] quality(%d) liveness(%d) age(%d) gender(%d) expression(%d) glass(%d)",
-            it->trackId, it->attribute.quality.score, it->attribute.liveness.score, it->attribute.age,
-            it->attribute.gender, it->attribute.expression, it->attribute.glass);
+        LOG(TAG,
+            "detectPicture faces[%d] rect(%d,%d,%d,%d) quality(%d) liveness(%d) age(%d) gender(%d) expression(%d) glass(%d)",
+            it->trackId, it->rect.left, it->rect.top, it->rect.right, it->rect.bottom, it->attribute.quality.score,
+            it->attribute.liveness.score, it->attribute.age, it->attribute.gender, it->attribute.expression,
+            it->attribute.glass);
     }
 
     if (image.data) {

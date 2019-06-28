@@ -62,7 +62,7 @@ int main() {
         return 0;
     }
 
-    sFaceRecognize = FaceRecognize::createInstance(TERMINAL);
+    sFaceRecognize = FaceRecognize::createInstance(GROUP_NAME, TERMINAL);
     //sFaceRecognize = FaceRecognize::createInstance(CLOUD);
     LOG(TAG, "sFaceRecognize(%p)", sFaceRecognize);
     if (!sFaceRecognize) {
@@ -97,8 +97,6 @@ int main() {
     }
     LOG(TAG, "addPersonsAndFeatures OK");
 #endif
-
-    sFaceRecognize->setGroupId(sGroup.id);
 
     //step 6: recognizePictures
     status = recognizePictures();

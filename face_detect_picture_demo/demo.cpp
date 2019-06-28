@@ -20,15 +20,18 @@ int main() {
     enableDebug(true);
     //step 1: authorize or enable debug
     LOG(TAG, "version(%s)", getVersion());
-    int status = authorize(KEY);
-	setConfigInt("CFG_FD_NORM_SIZE", 320);
-
+    int status = setPersistencePath(".");
     if (status != OK) {
         LOG(TAG, "authorize error(%d) key(%s)", status, KEY);
         return 0;
     } else {
         LOG(TAG, "authorize ok key(%s)", KEY);
     }
+
+    setConfigInt("CFG_FD_NORM_SIZE", 320);
+
+    setCloudAddr("127.0.0.1", 8090);
+    setCloudLoginAccount("admin", "666666");
 
     //step 2: create FaceVerify Instance (TERMINAL or CLOUD)
     sFaceDetect = FaceDetect::createInstance(TERMINAL);
@@ -76,9 +79,11 @@ int detectPicture() {
 
     LOG(TAG, "detectPicture faceNum(%d)", faceList.size());
     for (list<Face>::iterator it = faceList.begin(); it != faceList.end(); ++it) {
-        LOG(TAG, "detectPicture faces[%d] quality(%d) liveness(%d) age(%d) gender(%d) expression(%d) glass(%d)",
-            it->trackId, it->attribute.quality.score, it->attribute.liveness.score, it->attribute.age,
-            it->attribute.gender, it->attribute.expression, it->attribute.glass);
+        LOG(TAG,
+            "detectPicture faces[%d] rect(%d,%d,%d,%d) quality(%d) liveness(%d) age(%d) gender(%d) expression(%d) glass(%d)",
+            it->trackId, it->rect.left, it->rect.top, it->rect.right, it->rect.bottom, it->attribute.quality.score,
+            it->attribute.liveness.score, it->attribute.age, it->attribute.gender, it->attribute.expression,
+            it->attribute.glass);
     }
 
 #ifdef OPENCV

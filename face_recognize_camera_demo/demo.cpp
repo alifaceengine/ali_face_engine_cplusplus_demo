@@ -39,7 +39,7 @@ static Group sGroup;
 
 int main() {
     //step 1: set config path
-    int status = setPersistencePath(".");
+    int status = setPersistencePath("../");
     if (status != OK) {
         LOG(TAG, "setPersistencePath error(%d) key(%s)", status);
         return 0;

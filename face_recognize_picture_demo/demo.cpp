@@ -41,7 +41,7 @@ static Group sGroup;
 
 int main() {
     //step 1: authorize or enable debug
-    int status = setPersistencePath(".");
+    int status = setPersistencePath("../");
     if (status != OK) {
         LOG(TAG, "setPersistencePath error(%d) key(%s)", status);
         return 0;

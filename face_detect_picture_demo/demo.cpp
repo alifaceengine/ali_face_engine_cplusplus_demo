@@ -19,10 +19,10 @@ FaceDetect *sFaceDetect;
 int main() {
     int status = setPersistencePath("../");
     if (status != OK) {
-        LOG(TAG, "authorize error(%d) key(%s)", status, KEY);
+        LOG(TAG, "setPersistencePath error(%d)", status);
         return 0;
     } else {
-        LOG(TAG, "authorize ok key(%s)", KEY);
+        LOG(TAG, "setPersistencePath ok");
     }
 
     setConfigInt("CFG_FD_NORM_SIZE", 320);

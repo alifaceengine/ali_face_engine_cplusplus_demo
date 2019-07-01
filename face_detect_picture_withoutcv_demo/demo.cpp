@@ -17,21 +17,13 @@ static int detectPicture();
 FaceDetect *sFaceDetect;
 
 int main() {
-    enableDebug(false);
-    //step 1: authorize or enable debug
-    LOG(TAG, "version(%s)", getVersion());
-    int status = authorize(KEY);
-    setConfigInt("CFG_FD_NORM_SIZE", 320);
-
+    int status = setPersistencePath("../");
     if (status != OK) {
-        LOG(TAG, "authorize error(%d) key(%s)", status, KEY);
+        LOG(TAG, "setPersistencePath error(%d)", status);
         return 0;
     } else {
-        LOG(TAG, "authorize ok key(%s)", KEY);
+        LOG(TAG, "setPersistencePath ok");
     }
-
-    setCloudAddr("101.132.89.177", 15000);
-    setCloudLoginAccount("admin", "admin");
 
     //step 2: create FaceVerify Instance (TERMINAL or CLOUD)
     sFaceDetect = FaceDetect::createInstance(TERMINAL);

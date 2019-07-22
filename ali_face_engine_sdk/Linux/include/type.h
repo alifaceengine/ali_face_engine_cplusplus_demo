@@ -217,10 +217,10 @@ namespace ali_face_engine {
         DetectParameter();
     };
 
-    const int GROUP_NAME_MAX_SIZE = 100;
-    const int PERSON_NAME_MAX_SIZE = 50;
-    const int FEATURE_NAME_MAX_SIZE = 50;
-    const int TAG_MAX_SIZE = 1000;
+    const int GROUP_NAME_MAX_SIZE = 255;
+    const int PERSON_NAME_MAX_SIZE = 1024;
+    const int FEATURE_NAME_MAX_SIZE = 255;
+    const int TAG_MAX_SIZE = 1024;
 
     class DLL_API RecognizeResult {
     public:

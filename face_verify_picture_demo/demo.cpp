@@ -57,12 +57,12 @@ int verifySamePerson() {
 
     Image image1;
     image1.data = jpeg1;
-    image1.format = ImageFormat_UNKNOWN;
+    image1.format = COMPRESSED;
     image1.dataLen = jpeg1Len;
 
     Image image2;
     image2.data = jpeg2;
-    image2.format = ImageFormat_UNKNOWN;
+    image2.format = COMPRESSED;
     image2.dataLen = jpeg2Len;
 
     Face image1Face;

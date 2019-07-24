@@ -55,8 +55,10 @@ namespace ali_face_engine {
      * @brief [中文] 特征模型类型
     */
     enum ModelType {
-        MODEL_SMALL = 1,///< [EN]face small feature type [中文]人脸特征小模型类型
-        MODEL_BIG = 2///< [EN]face big feature type [中文]人脸特征大模型类型
+        MODEL_SMALL = 1,//same as MODEL_3K
+        MODEL_3K = 1,//for 3000 persons
+        MODEL_BIG = 2,//same as MODEL_100K
+        MODEL_100K = 2//for 100000 persons
     };
 
     /**
@@ -64,16 +66,14 @@ namespace ali_face_engine {
      * @brief [中文] 图像格式
     */
     enum ImageFormat {
-        ImageFormat_UNKNOWN = -1,///< [EN]unknown image format, maybe JPEG,PNG,BMP [中文]未知的图像格式，可能是JPEG,PNG,BMP
+        ImageFormat_UNKNOWN = -1,//same as COMPRESSED
+        COMPRESSED = -1,//JPEG, PNG, BMP
         RGB888 = 0,///< rgb888
         BGR888 = 1,///< bgr888
         NV21 = 10,///< nv21, yuv420sp, YYYYYYYY VUVU
         NV12 = 11,///< nv12, yuv420sp, YYYYYYYY UVUV
         YV12 = 12,///<yv12, yuv420p, YYYYYYYY VV UU
         I420 = 13,///<I420, yuv420p, YYYYYYYY UU VV
-        JPEG = 20,///< jpeg
-        PNG = 21,///< png
-        BMP = 22///< bmp
     };
 
     /**

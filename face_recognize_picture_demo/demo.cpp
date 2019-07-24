@@ -74,8 +74,8 @@ int main() {
 
     //step 4: create group
     sGroup.name = GROUP_NAME;
-    sGroup.modelType = MODEL_SMALL;
-    //sGroup.modelType = MODEL_BIG;
+    sGroup.modelType = MODEL_3K;
+    //sGroup.modelType = MODEL_100K;
     status = sFaceRegister->createGroup(sGroup);
     if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
         LOG(TAG, "createGroup error(%d)", status);
@@ -137,7 +137,7 @@ int addFeature(char *personId, char *featureName, const char *filePath) {
 
     Image image;
     image.data = data;
-    image.format = ImageFormat_UNKNOWN;
+    image.format = COMPRESSED;
     image.dataLen = dataLen;
 
     list <Face> faces;
@@ -191,7 +191,7 @@ int recognizePicture(char *personName, const char *filePath) {
 
     Image image;
     image.data = data;
-    image.format = ImageFormat_UNKNOWN;
+    image.format = COMPRESSED;
     image.dataLen = dataLen;
 
     list <Face> faces;

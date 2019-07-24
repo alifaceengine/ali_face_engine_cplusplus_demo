@@ -63,7 +63,7 @@ int extractFeature() {
 
     Image image;
     image.data = data;
-    image.format = ImageFormat_UNKNOWN;
+    image.format = COMPRESSED;
     image.dataLen = dataLen;
 
     list <Face> faces;
@@ -75,7 +75,7 @@ int extractFeature() {
     }
 
     string feature;
-    status = sFaceRegister->extractFeature(image, *faces.begin(), MODEL_SMALL, feature);
+    status = sFaceRegister->extractFeature(image, *faces.begin(), MODEL_3K, feature);
     if (status != OK) {
         LOG(TAG, "extractFeature error(%d)", status);
         return status;

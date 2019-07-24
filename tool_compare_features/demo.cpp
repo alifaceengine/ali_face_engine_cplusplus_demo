@@ -45,12 +45,12 @@ int main() {
 
     Image image1;
     image1.data = jpeg1;
-    image1.format = ImageFormat_UNKNOWN;
+    image1.format = COMPRESSED;
     image1.dataLen = jpeg1Len;
 
     Image image2;
     image2.data = jpeg2;
-    image2.format = ImageFormat_UNKNOWN;
+    image2.format = COMPRESSED;
     image2.dataLen = jpeg2Len;
 
     list <Face> faces1;
@@ -70,10 +70,10 @@ int main() {
     }
 
     string feature1;
-    sFaceRegister->extractFeature(image1, *faces1.begin(), MODEL_SMALL, feature1);
+    sFaceRegister->extractFeature(image1, *faces1.begin(), MODEL_3K, feature1);
 
     string feature2;
-    sFaceRegister->extractFeature(image2, *faces2.begin(), MODEL_SMALL, feature2);
+    sFaceRegister->extractFeature(image2, *faces2.begin(), MODEL_3K, feature2);
 
     if (feature1.size() == 0) {
         LOG(TAG, "feature1 is empty");

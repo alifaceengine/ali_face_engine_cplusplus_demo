@@ -44,7 +44,7 @@ int detectPicture() {
 
     Image image;
     image.data = data;
-    image.format = ImageFormat_UNKNOWN;
+    image.format = COMPRESSED;
     image.dataLen = dataLen;
 
     DetectParameter parameter = sFaceDetect->getPictureParameter();

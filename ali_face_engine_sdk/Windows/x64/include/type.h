@@ -229,6 +229,7 @@ namespace ali_face_engine {
         string personName;
         string personTag;
         float similarity;
+        string feature;
 
         RecognizeResult();
     };
@@ -237,6 +238,7 @@ namespace ali_face_engine {
     public:
         int trackId;
         float similarity;
+        string feature;
 
         VerifyResult();
     };

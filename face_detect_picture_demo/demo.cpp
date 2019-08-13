@@ -41,7 +41,7 @@ int main() {
 int detectPicture() {
     unsigned char *data = 0;
     int dataLen = 0;
-    loadFile(data, dataLen, (char *) (PICTURE_ROOT + "fanbingbing_with_glass.jpg").c_str());
+    loadFile(data, dataLen, (char *) (PICTURE_ROOT + "liudehua.jpg").c_str());
 
     Image image;
     image.data = data;

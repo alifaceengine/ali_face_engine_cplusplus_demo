@@ -21,13 +21,12 @@ static int verifyDifferentPerson();
 
 int main() {
     //step 1: authorize or enable debug
-    enableDebug(true);
-    int status = authorize(KEY);
+    int status = setPersistencePath("../");
     if (status != OK) {
-        LOG(TAG, "authorize error(%d) key(%s)", status, KEY);
+        LOG(TAG, "setPersistencePath error(%d)", status);
         return 0;
     } else {
-        LOG(TAG, "authorize ok key(%s)", KEY);
+        LOG(TAG, "setPersistencePath ok");
     }
 
     setCloudAddr("127.0.0.1", 8090);
@@ -79,8 +78,10 @@ int verifySamePerson() {
         if (it->similarity >= 70) {
             LOG(TAG, "verifySamePerson OK similarity(%f)", it->similarity);
         } else {
-            LOG(TAG, "verifySamePerson 000FAIL similarity(%f)", it->similarity);
+            LOG(TAG, "verifySamePerson FAIL similarity(%f)", it->similarity);
         }
+
+        LOG(TAG, "verifySamePerson feature(%s)", it->feature.c_str());
     }
 
     return OK;
@@ -97,12 +98,12 @@ int verifyDifferentPerson() {
 
     Image image1;
     image1.data = jpeg1;
-    image1.format = JPEG;
+    image1.format = COMPRESSED;
     image1.dataLen = jpeg1Len;
 
     Image image2;
     image2.data = jpeg2;
-    image2.format = JPEG;
+    image2.format = COMPRESSED;
     image2.dataLen = jpeg2Len;
 
     Face image1Face;
@@ -121,6 +122,8 @@ int verifyDifferentPerson() {
         } else {
             LOG(TAG, "verifyDifferentPerson FAIL similarity(%f)", it->similarity);
         }
+
+        LOG(TAG, "verifyDifferentPerson feature(%s)", it->feature.c_str());
     }
 
     return OK;

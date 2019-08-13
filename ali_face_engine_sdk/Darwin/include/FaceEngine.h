@@ -32,6 +32,8 @@ namespace ali_face_engine {
     DLL_API void setJavaVM(JavaVM *vm);
 #endif
 
+    DLL_API bool supportCloud();
+
     DLL_API int setPersistencePath(const char *path);
 
     DLL_API int authorize(char *key);

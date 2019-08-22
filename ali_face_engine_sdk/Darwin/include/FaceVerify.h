@@ -35,6 +35,8 @@ namespace ali_face_engine {
 
         virtual int registerFace(Image &image, Face &face) = 0;
 
+        virtual int registerFeature(string &feature) = 0;
+
         virtual int
         verifyPicture(Image &image1, Face &image1Face, Image &image2, list<Face> &image2FaceList,
                       list<VerifyResult> &verifyResultList) = 0;

@@ -120,6 +120,8 @@ namespace ali_face_engine {
 
         static void bmpToBGR888(unsigned char *bmp, int bmpLen, unsigned char *&bgr, int &width, int &height);
 
+        static void rgb888ToBmp(unsigned char *src, int w, int h, unsigned char *&bmp, int &bmpLen);
+
         static bool isJpeg(unsigned char *data, int len);
 
         static bool isPng(unsigned char *data, int len);

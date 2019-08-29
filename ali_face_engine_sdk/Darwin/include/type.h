@@ -105,6 +105,8 @@ namespace ali_face_engine {
         Image();
 
         int getDataLen();
+
+        Image clone();
     };
 
     /**
@@ -222,27 +224,6 @@ namespace ali_face_engine {
     const int FEATURE_NAME_MAX_SIZE = 255;
     const int TAG_MAX_SIZE = 1024;
 
-    class DLL_API RecognizeResult {
-    public:
-        int trackId;
-        string personId;
-        string personName;
-        string personTag;
-        float similarity;
-        string feature;
-
-        RecognizeResult();
-    };
-
-    class DLL_API VerifyResult {
-    public:
-        int trackId;
-        float similarity;
-        string feature;
-
-        VerifyResult();
-    };
-
     class DLL_API Attribute {
     public:
         Quality quality;
@@ -296,5 +277,28 @@ namespace ali_face_engine {
         string tag;
 
         Group();
+    };
+
+    class DLL_API RecognizeResult {
+    public:
+        int trackId;
+        string personId;
+        string personName;
+        string personTag;
+        float similarity;
+        string feature;
+        Face face;
+
+        RecognizeResult();
+    };
+
+    class DLL_API VerifyResult {
+    public:
+        int trackId;
+        float similarity;
+        string feature;
+        Face face;
+
+        VerifyResult();
     };
 }

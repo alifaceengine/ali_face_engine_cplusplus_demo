@@ -8,6 +8,7 @@
 #include "FaceDetect.h"
 #include "FaceAttributeAnalyze.h"
 #include "FaceRecognize.h"
+#include "FaceRecognizeNoDB.h"
 #include "FaceVerify.h"
 #include "FaceRegister.h"
 #include "FeatureExtract.h"

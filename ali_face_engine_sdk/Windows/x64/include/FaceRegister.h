@@ -21,6 +21,8 @@ namespace ali_face_engine {
 
         virtual int createGroup(Group &group) = 0;
 
+        virtual int registerPicture(const string &groupId, Image &image, Person &person, const string &featureName) = 0;
+
         virtual int deleteGroup(const string &groupId) = 0;
 
         virtual bool isGroupExist(const string &groupName) = 0;

@@ -95,3 +95,13 @@ int saveFile(char *buf, int len, char *path) {
     }
     return -1;
 }
+
+int saveFile(unsigned char *buf, int len, char *path) {
+    FILE *pf = fopen(path, "wb");
+    if (pf != NULL) {
+        fwrite(buf, sizeof(char), len, pf);
+        fclose(pf);
+        return 0;
+    }
+    return -1;
+}

@@ -23,7 +23,12 @@ namespace ali_face_engine {
 
         virtual int registerPicture(const string &groupId, Image &image, Person &person, const string &featureName) = 0;
 
+        virtual int
+        registerPicture2(const string &groupName, Image &image, Person &person, const string &featureName) = 0;
+
         virtual int deleteGroup(const string &groupId) = 0;
+
+        virtual int deleteGroupByName(const string &groupName) = 0;
 
         virtual bool isGroupExist(const string &groupName) = 0;
 
@@ -38,6 +43,10 @@ namespace ali_face_engine {
         virtual int addPerson(const string &groupId, Person &person) = 0;
 
         virtual int deletePerson(const string &personId) = 0;
+
+        virtual int deletePersonByName(const string &groupId, const string &personName) = 0;
+
+        virtual int deletePersonByName2(const string &groupName, const string &personName) = 0;
 
         virtual int deleteAllPersons(const string &groupId) = 0;
 
@@ -56,6 +65,14 @@ namespace ali_face_engine {
         virtual int addFeature(const string &personId, Feature &feature) = 0;
 
         virtual int deleteFeature(const string &featureId) = 0;
+
+        virtual int deleteFeatureByName(const string &personId, const string &featureName) = 0;
+
+        virtual int
+        deleteFeatureByName2(const string &groupId, const string &personName, const string &featureName) = 0;
+
+        virtual int
+        deleteFeatureByName3(const string &groupName, const string &personName, const string &featureName) = 0;
 
         virtual int deleteAllFeatures(const string &personId) = 0;
 

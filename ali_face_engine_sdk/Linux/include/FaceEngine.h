@@ -39,6 +39,8 @@ namespace ali_face_engine {
 
     DLL_API int authorize(char *key);
 
+    DLL_API int unInitialize();
+
     DLL_API void setCloudAddr(const char *ip, const int port);
 
     DLL_API void setCloudLoginAccount(const char *cId, const char *cSecret);

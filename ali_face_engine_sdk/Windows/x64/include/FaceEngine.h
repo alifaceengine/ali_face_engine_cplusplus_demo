@@ -64,6 +64,8 @@ namespace ali_face_engine {
 
     DLL_API float getConfigFloat(const char *key, const float defaultValue);
 
+    DLL_API int testPerformance();
+
     //face
     DLL_API Face *newFace();
 

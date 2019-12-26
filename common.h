@@ -28,6 +28,21 @@ struct tm *p = localtime(&tv.tv_sec); \
 
 #endif
 
+
+int saveFile(vector<unsigned char> &buf, char *path) {
+    FILE *pf = fopen(path, "wb");
+    unsigned char tmp[1];
+    if (pf != NULL) {
+        for (auto c : buf) {
+            tmp[0] = c;
+            fwrite(tmp, sizeof(char), 1, pf);
+        }
+        fclose(pf);
+        return 0;
+    }
+    return -1;
+}
+
 #ifdef OPENCV
 using namespace cv;
 
@@ -35,7 +50,7 @@ void printTextToWindow(IplImage *frame, char *display_text, int x, int y, int co
     Mat previewFrame = cvarrToMat(frame);
     std::string text = display_text;
     int font_face = cv::FONT_HERSHEY_COMPLEX;
-    double font_scale = 0.8;
+    double font_scale = 0.5;
     int thickness = 1;
     int baseline;
     //获取文本框的长宽
@@ -53,7 +68,7 @@ void printTextToWindow(IplImage *frame, char *display_text, int x, int y, int co
 void printTextToWindow(Mat *previewFrame, char *display_text, int x, int y, int color) {
     std::string text = display_text;
     int font_face = cv::FONT_HERSHEY_COMPLEX;
-    double font_scale = 0.8;
+    double font_scale = 0.5;
     int thickness = 1;
     int baseline;
     //获取文本框的长宽
@@ -66,6 +81,34 @@ void printTextToWindow(Mat *previewFrame, char *display_text, int x, int y, int 
     cv::putText(*previewFrame, text, origin, font_face, font_scale,
                 cv::Scalar((color) & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF), thickness, 8, 0);
 }
+
+static int MatToJpeg(const cv::Mat mat, string &file) {
+    if (mat.empty()) {
+        return 0;
+    }
+
+    std::vector<unsigned char> buff;
+    std::vector<int> param = std::vector<int>(2);
+    param[0] = CV_IMWRITE_JPEG_QUALITY;
+    param[1] = 95; // default(95) 0-100
+    cv::imencode(".jpg", mat, buff, param);
+    saveFile(buff, (char *) file.c_str());
+    return 0;
+}
+
+static int IplImageToJpeg(const IplImage *iplImage, string &file) {
+    if (!iplImage) {
+        return 0;
+    }
+
+#if 1
+    cv::Mat mat = cv::cvarrToMat(iplImage);
+#else
+    cv::Mat mat = iplImage;
+#endif
+    return MatToJpeg(mat, file);
+}
+
 #endif
 
 int loadFile(unsigned char *&buf, int &len, char *path) {

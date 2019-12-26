@@ -16,13 +16,12 @@ FaceDetect *sFaceDetect;
 
 int main() {
     //step 1: authorize or enable debug
-    enableDebug(true);
-    int status = authorize(KEY);
+    int status = setPersistencePath("../");
     if (status != OK) {
-        LOG(TAG, "authorize error(%d) key(%s)", status, KEY);
+        LOG(TAG, "setPersistencePath error(%d)", status);
         return 0;
     } else {
-        LOG(TAG, "authorize ok key(%s)", KEY);
+        LOG(TAG, "setPersistencePath ok");
     }
 
     //step 3: create FaceVerify Instance (TERMINAL or CLOUD)
@@ -43,7 +42,7 @@ int detectMP4() {
 
     IplImage *frame = NULL;
     CvCapture *capture = NULL;
-    capture = cvCreateFileCapture("yourpath.mp4");
+    capture = cvCreateFileCapture("../1.mp4");
     frame = cvQueryFrame(capture);
 
     //save result to mp4
@@ -101,6 +100,11 @@ int detectMP4() {
                 );
             }
             cvWriteFrame(writer, frame);
+        }
+
+        if (false) {
+            string jpeg = to_string(frameIndex) + ".jpg";
+            IplImageToJpeg(frame, jpeg);
         }
 
         cvWaitKey(1);

@@ -17,7 +17,7 @@ namespace ali_face_engine {
         public:
             string personId;
             string featureId;
-            float similarity;
+            float similarity = 0;
         };
 
     public:
@@ -47,6 +47,8 @@ namespace ali_face_engine {
         virtual int getFeatureNumOfGroup(int &num) = 0;
 
         virtual int recognizeFeature(string feature, Result &result) = 0;
+
+        virtual int recognizeFeature(string feature, int topN, list<Result> &results) = 0;
 
     protected:
         FaceRecognizeNoDB();

@@ -41,6 +41,8 @@ namespace ali_face_engine {
 
         static Image toJpeg(Image &src);
 
+        static Image toBmp(Image &src);
+
         static Image rotateToPortrait(Image &src);
 
         static Image crop(Image &src, Rect &roi);

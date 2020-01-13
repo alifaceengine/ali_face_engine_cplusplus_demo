@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #ifdef OPENCV
 #include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
@@ -9,6 +11,7 @@
 #else
 
 #include <sys/time.h>
+#include <dirent.h>
 
 #endif
 
@@ -22,7 +25,7 @@ static char *KEY = "eyJ2ZW5kb3JJZCI6ImNlc2hpX3ZlbmRvciIsInJvbGUiOjEsImNvZGUiOiJF
 gettimeofday(&tv, 0); \
 struct tm *p = localtime(&tv.tv_sec); \
     printf("%04d-%02d-%02d %02d:%02d:%02d.%03d I [%s] : " fmt "\n", \
-    1900 + p->tm_year, 1 + p->tm_mon, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, tv.tv_usec/1000,\
+    1900 + p->tm_year, 1 + p->tm_mon, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, tv.tv_usec,\
     TAG, ##args);\
 }while(0)\
 
@@ -147,4 +150,84 @@ int saveFile(unsigned char *buf, int len, char *path) {
         return 0;
     }
     return -1;
+}
+
+int getFileList(string &path, list<string> &files) {
+    DIR *dp;
+    struct dirent *dirp;
+    if ((dp = opendir(path.c_str())) == NULL) {
+        return -1;
+    }
+    while ((dirp = readdir(dp)) != NULL) {
+        files.push_back(dirp->d_name);
+    }
+    closedir(dp);
+    return 0;
+}
+
+bool comp(string p1, string p2) {
+    int ymd = 0;
+    int hms = 0;
+    int mics = 0;
+    int fn = 0;
+    sscanf(p1.c_str(), "fd_%d-%d.%d_f%d.bmp", &ymd, &hms, &mics, &fn);
+
+    int ymd2 = 0;
+    int hms2 = 0;
+    int mics2 = 0;
+    int fn2 = 0;
+    sscanf(p2.c_str(), "fd_%d-%d.%d_f%d.bmp", &ymd2, &hms2, &mics2, &fn2);
+
+    bool bigger = false;
+    if (ymd > ymd2) {
+        return false;
+    } else if (ymd < ymd2) {
+        return true;
+    } else {
+        if (hms > hms2) {
+            return false;
+        } else if (hms < hms2) {
+            return true;
+        } else {
+            if (mics > mics2) {
+                return false;
+            } else if (mics < mics2) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+}
+
+int getPictureList(string &path, list<string> &files) {
+    DIR *dp;
+    struct dirent *dirp;
+    if ((dp = opendir(path.c_str())) == NULL) {
+        printf("Can't open %s\n", path.c_str());
+        return -1;
+    }
+
+    int index = 0;
+    int ymd = 0;
+    int hms = 0;
+    int mics = 0;
+    int fn = 0;
+
+    while ((dirp = readdir(dp)) != NULL) {
+        int num = sscanf(dirp->d_name, "fd_%d_%d-%d.%d_f%d.bmp", &index, &ymd, &hms, &mics, &fn);
+        if (num != 5) {
+            continue;
+        }
+        string filename(dirp->d_name);
+        if (filename.c_str()[filename.size() - 1] != 'p' || filename.c_str()[filename.size() - 2] != 'm' ||
+            filename.c_str()[filename.size() - 3] != 'b') {
+            continue;
+        }
+        files.push_back(filename);
+    }
+
+    files.sort(comp);
+    closedir(dp);
+    return 0;
 }

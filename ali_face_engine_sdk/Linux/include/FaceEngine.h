@@ -49,6 +49,8 @@ namespace ali_face_engine {
 
     DLL_API bool supportGPU();
 
+    DLL_API int getGPUCount();
+
     //version>=3.3.0
     DLL_API void setConfigString(const char *key, const char *value);
 

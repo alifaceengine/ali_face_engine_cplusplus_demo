@@ -14,7 +14,6 @@ static string PICTURE_ROOT = "../pictures/";
 
 FaceRegister *sFaceRegister;
 FaceRecognize *sFaceRecognize;
-FaceDetect *sFaceDetect;
 
 //persons, jpgfile : personname_featureid.jpg
 static const char *BASE_PERSONS[] = {
@@ -30,13 +29,13 @@ static const int TEST_PERSONS_NUM = sizeof(TEST_PERSONS) / sizeof(char *);
 
 static int addPersonsAndFeatures();
 
-static int addFeature(char *personName, char *featureId, const char *filePath);
-
 static int recognizePicture(char *personName, const char *filePath);
 
 static int recognizePictures();
 
-static const char *GROUP_NAME = "SMALL_2000";
+static const ModelType MODEL_TYPE = MODEL_3K;//MODEL_100K
+static const Mode MODE = CLOUD;//TERMINAL
+static const char *GROUP_NAME = "SMALL_xxx";
 static Group sGroup;
 
 int main() {
@@ -57,25 +56,16 @@ int main() {
         return 0;
     }
 
-    sFaceRecognize = FaceRecognize::createInstance(GROUP_NAME, TERMINAL);
-    //sFaceRecognize = FaceRecognize::createInstance(CLOUD);
+    sFaceRecognize = FaceRecognize::createInstance(GROUP_NAME, MODE);
     LOG(TAG, "sFaceRecognize(%p)", sFaceRecognize);
     if (!sFaceRecognize) {
         LOG(TAG, "FaceRecognize::createInstance error");
         return 0;
     }
 
-    sFaceDetect = FaceDetect::createInstance(TERMINAL);
-    LOG(TAG, "sFaceDetect(%p)", sFaceDetect);
-    if (!sFaceDetect) {
-        LOG(TAG, "FaceDetect::createInstance error");
-        return 0;
-    }
-
     //step 4: create group
     sGroup.name = GROUP_NAME;
-    sGroup.modelType = MODEL_3K;
-    //sGroup.modelType = MODEL_100K;
+    sGroup.modelType = MODEL_TYPE;
     status = sFaceRegister->createGroup(sGroup);
     if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
         LOG(TAG, "createGroup error(%d)", status);
@@ -108,6 +98,19 @@ int addPersonsAndFeatures() {
     char featureName[FEATURE_NAME_MAX_SIZE] = {0};
 
     for (int i = 0; i < BASE_PERSONS_NUM; i++) {
+        unsigned char *data = 0;
+        int dataLen = 0;
+        loadFile(data, dataLen, (char *) (PICTURE_ROOT + BASE_PERSONS[i]).c_str());
+        if (!data) {
+            LOG(TAG, "");
+            exit(-1);
+        }
+
+        Image image;
+        image.data = data;
+        image.format = COMPRESSED;
+        image.dataLen = dataLen;
+
         memset(personName, 0, sizeof(personName));
         memset(featureName, 0, sizeof(featureName));
         sscanf(BASE_PERSONS[i], "%[^_]", personName);
@@ -115,58 +118,18 @@ int addPersonsAndFeatures() {
 
         Person person;
         person.name = personName;
-        int status = sFaceRegister->addPerson(sGroup.id, person);
+        int status = sFaceRegister->registerPicture2(GROUP_NAME, image, person, featureName);
+        if (image.data) {
+            free(image.data);
+        }
+
         if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
             LOG(TAG, "addPerson[%d] %s, error(%d)", i, personName, status);
             return status;
         }
-
-        status = addFeature((char *) person.id.c_str(), featureName, (PICTURE_ROOT + BASE_PERSONS[i]).c_str());
-        if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
-            LOG(TAG, "addFeature[%d] %s, status(%d)", i, featureName, status);
-            return status;
-        }
     }
     return OK;
 }
-
-int addFeature(char *personId, char *featureName, const char *filePath) {
-    unsigned char *data = 0;
-    int dataLen = 0;
-    loadFile(data, dataLen, (char *) filePath);
-
-    Image image;
-    image.data = data;
-    image.format = COMPRESSED;
-    image.dataLen = dataLen;
-
-    list <Face> faces;
-    int status = sFaceDetect->detectPicture(image, faces);
-
-    if (status != OK || faces.size() == 0) {
-        LOG(TAG, "detectPicture error(%d)", status);
-        return status;
-    }
-
-    string feature;
-    status = sFaceRegister->extractFeature(image, *faces.begin(), sGroup.modelType, feature);
-    if (status != OK) {
-        LOG(TAG, "extractFeature error(%d)", status);
-        return status;
-    }
-
-    Feature feature1;
-    feature1.name = featureName;
-    feature1.feature = feature;
-    status = sFaceRegister->addFeature(personId, feature1);
-    if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
-        LOG(TAG, "addFeature error(%d)", status);
-        return status;
-    }
-
-    return OK;
-}
-
 
 int recognizePictures() {
     char personName[PERSON_NAME_MAX_SIZE] = {0};
@@ -189,30 +152,37 @@ int recognizePicture(char *personName, const char *filePath) {
     int dataLen = 0;
     loadFile(data, dataLen, (char *) filePath);
 
+    if (!data) {
+        LOG(TAG, "recognizePicture error, load %s fail", filePath);
+        exit(-1);
+    }
     Image image;
     image.data = data;
     image.format = COMPRESSED;
     image.dataLen = dataLen;
 
-    list <Face> faces;
     list <RecognizeResult> recognizeResults;
 
-    int status = sFaceRecognize->recognizePicture(image, faces, recognizeResults);
+    int status = sFaceRecognize->recognizePicture(image, recognizeResults);
+    if (image.data) {
+        free(image.data);
+        image.data = 0;
+    }
+
     if (status != OK) {
         LOG(TAG, "recognizePicture error(%d) resultNum(%d)", status, recognizeResults.size());
         return status;
     }
 
-    for (list<RecognizeResult>::iterator it = recognizeResults.begin(); it != recognizeResults.end(); ++it) {
-        if (strcmp(personName, it->personName.c_str()) != 0) {
+    for (auto result : recognizeResults) {
+        if (strcmp(personName, result.personName.c_str()) != 0) {
             LOG(TAG, "recognizePicture FAIL: TestName(%s) BaseName(%s) similarity(%f)", personName,
-                it->personName.c_str(), it->similarity);
+                result.personName.c_str(), result.similarity);
             return FAILED;
         } else {
             LOG(TAG, "recognizePicture OK: TestName(%s) BaseName(%s) similarity(%f)", personName,
-                it->personName.c_str(), it->similarity);
+                result.personName.c_str(), result.similarity);
             return OK;
         }
     }
-
 }

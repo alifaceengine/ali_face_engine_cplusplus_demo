@@ -14,7 +14,11 @@ using namespace std;
 #define DLL_API
 #define INT64_AFE long long
 #define UINT64_AFE unsigned long long
-#else
+#elif __linux__
+#define DLL_API
+#define INT64_AFE long
+#define UINT64_AFE unsigned long
+#elif __APPLE__
 #define DLL_API
 #define INT64_AFE long
 #define UINT64_AFE unsigned long

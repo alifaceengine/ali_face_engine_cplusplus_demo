@@ -40,6 +40,8 @@ namespace ali_face_engine {
 
         virtual int recognizeVideo(Image &image, list<Face> &faceList) = 0;
 
+        virtual int recognizePicture(Image &image, list<RecognizeResult> &recognizeResultList) = 0;
+
         virtual int
         recognizePicture(Image &image, list<Face> &faceList, list<RecognizeResult> &recognizeResultList) = 0;
 

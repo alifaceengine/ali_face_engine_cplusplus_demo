@@ -24,8 +24,6 @@ static const int BASE_PERSONS_NUM = sizeof(BASE_PERSONS) / sizeof(char *);
 
 static int addPersonsAndFeatures();
 
-static int addFeature(char *personName, char *featureId, const char *filePath);
-
 static int recognizeMP4();
 
 static const char *GROUP_NAME = "SMALL_2000";
@@ -65,8 +63,8 @@ int main() {
 
     //step 4: create group
     sGroup.name = GROUP_NAME;
-    sGroup.modelType = MODEL_3K;
-    //sGroup.modelType = MODEL_100K;
+    //sGroup.modelType = MODEL_3K;
+    sGroup.modelType = MODEL_100K;
     status = sFaceRegister->createGroup(sGroup);
     if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
         LOG(TAG, "createGroup error(%d)", status);
@@ -98,65 +96,24 @@ int main() {
 
 int addPersonsAndFeatures() {
     char personName[PERSON_NAME_MAX_SIZE] = {0};
-    char featureName[FEATURE_NAME_MAX_SIZE] = {0};
 
     for (int i = 0; i < BASE_PERSONS_NUM; i++) {
-        memset(personName, 0, sizeof(personName));
-        memset(featureName, 0, sizeof(featureName));
-        sscanf(BASE_PERSONS[i], "%[^_]", personName);
-        sscanf(BASE_PERSONS[i], "%*[^_]_%[^.]", featureName);
+        unsigned char *data = 0;
+        int dataLen = 0;
+        loadFile(data, dataLen, (char *) (PICTURE_ROOT + BASE_PERSONS[i]).c_str());
 
+        Image image;
+        image.data = data;
+        image.format = COMPRESSED;
+        image.dataLen = dataLen;
         Person person;
-        person.name = personName;
-        int status = sFaceRegister->addPerson(sGroup.id, person);
+        person.name = BASE_PERSONS[i];
+        int status = sFaceRegister->registerPicture(sGroup.id, image, person, "face1");
         if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
-            LOG(TAG, "addPerson[%d] %s, error(%d)", i, personName, status);
-            return status;
-        }
-
-        status = addFeature((char *) person.id.c_str(), featureName, (PICTURE_ROOT + BASE_PERSONS[i]).c_str());
-        if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
-            LOG(TAG, "addFeature[%d] %s, status(%d)", i, featureName, status);
+            LOG(TAG, "registerPicture[%d] %s, error(%d)", i, person.name.c_str(), status);
             return status;
         }
     }
-    return OK;
-}
-
-int addFeature(char *personId, char *featureName, const char *filePath) {
-    unsigned char *data = 0;
-    int dataLen = 0;
-    loadFile(data, dataLen, (char *) filePath);
-
-    Image image;
-    image.data = data;
-    image.format = COMPRESSED;
-    image.dataLen = dataLen;
-
-    list <Face> faces;
-    int status = sFaceDetect->detectPicture(image, faces);
-
-    if (status != OK || faces.size() == 0) {
-        LOG(TAG, "detectPicture error(%d)", status);
-        return status;
-    }
-
-    string feature;
-    status = sFaceRegister->extractFeature(image, *faces.begin(), sGroup.modelType, feature);
-    if (status != OK) {
-        LOG(TAG, "extractFeature error(%d)", status);
-        return status;
-    }
-
-    Feature feature1;
-    feature1.name = featureName;
-    feature1.feature = feature;
-    status = sFaceRegister->addFeature(personId, feature1);
-    if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
-        LOG(TAG, "addFeature error(%d)", status);
-        return status;
-    }
-
     return OK;
 }
 

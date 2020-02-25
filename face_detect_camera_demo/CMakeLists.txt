@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(ali_face_engine_demo)
 
+ADD_DEFINITIONS(-std=c++11)
 ADD_DEFINITIONS(-DOPENCV)
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})

@@ -50,6 +50,8 @@ namespace ali_face_engine {
 
         virtual int recognizeFeature(string feature, int topN, list<Result> &results) = 0;
 
+        virtual int recognizeFeatureOfPerson(string personId, string feature, Result &result) = 0;
+
     protected:
         FaceRecognizeNoDB();
 

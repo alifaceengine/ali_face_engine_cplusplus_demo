@@ -81,9 +81,14 @@ namespace ali_face_engine {
 
         static void i420ToBGR888(unsigned char *i420, int width, int height, unsigned char *&bgr, int &bgrLen);
 
+        static void rgbToY(unsigned char *rgb, int width, int height, unsigned char *&y);
+
         static void rgb888ToNV21(unsigned char *rgb, int width, int height, unsigned char *&yuv);
 
         static void rgb888ToNV21(unsigned char *rgb, int width, int height, unsigned char *&yuv, int &yuvLen);
+
+        static void rgb888ToNV21(unsigned char *rgb, int width, int height, int roi_left, int roi_top, int roi_right,
+                                 int roi_bottom, unsigned char *&yuv, int &yuvLen);
 
         static void bgr888ToNV21(unsigned char *bgr, int width, int height, unsigned char *&yuv);
 

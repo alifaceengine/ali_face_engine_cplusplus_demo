@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project(ali_face_engine_demo)
 
+ADD_DEFINITIONS(-std=c++11)
+
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     IF (${CMAKE_CL_64} MATCHES "1")
         include_directories(../ali_face_engine_sdk/${CMAKE_SYSTEM_NAME}/x64/include)

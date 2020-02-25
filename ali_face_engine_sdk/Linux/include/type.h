@@ -8,20 +8,8 @@ using namespace std;
 
 #ifdef WIN32
 #define DLL_API __declspec(dllexport)
-#define INT64_AFE long long
-#define UINT64_AFE unsigned long long
-#elif ARM_LINUX
+#else
 #define DLL_API
-#define INT64_AFE long long
-#define UINT64_AFE unsigned long long
-#elif __linux__
-#define DLL_API
-#define INT64_AFE long
-#define UINT64_AFE unsigned long
-#elif __APPLE__
-#define DLL_API
-#define INT64_AFE long
-#define UINT64_AFE unsigned long
 #endif
 
 namespace ali_face_engine {
@@ -92,7 +80,7 @@ namespace ali_face_engine {
         int stride;
         int height;
         int dataLen;
-        UINT64_AFE timestamp;
+        uint64_t timestamp;
         unsigned int customerIndex;
 
     public:

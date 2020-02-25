@@ -41,6 +41,8 @@ namespace ali_face_engine {
 
         static Image toJpeg(Image &src);
 
+        static Image toBmp(Image &src);
+
         static Image rotateToPortrait(Image &src);
 
         static Image crop(Image &src, Rect &roi);
@@ -79,9 +81,14 @@ namespace ali_face_engine {
 
         static void i420ToBGR888(unsigned char *i420, int width, int height, unsigned char *&bgr, int &bgrLen);
 
+        static void rgbToY(unsigned char *rgb, int width, int height, unsigned char *&y);
+
         static void rgb888ToNV21(unsigned char *rgb, int width, int height, unsigned char *&yuv);
 
         static void rgb888ToNV21(unsigned char *rgb, int width, int height, unsigned char *&yuv, int &yuvLen);
+
+        static void rgb888ToNV21(unsigned char *rgb, int width, int height, int roi_left, int roi_top, int roi_right,
+                                 int roi_bottom, unsigned char *&yuv, int &yuvLen);
 
         static void bgr888ToNV21(unsigned char *bgr, int width, int height, unsigned char *&yuv);
 
@@ -119,6 +126,8 @@ namespace ali_face_engine {
         static void bmpToRGB888(unsigned char *bmp, int bmpLen, unsigned char *&rgb, int &width, int &height);
 
         static void bmpToBGR888(unsigned char *bmp, int bmpLen, unsigned char *&bgr, int &width, int &height);
+
+        static void rgb888ToBmp(unsigned char *src, int w, int h, unsigned char *&bmp, int &bmpLen);
 
         static bool isJpeg(unsigned char *data, int len);
 

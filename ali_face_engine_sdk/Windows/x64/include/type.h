@@ -80,6 +80,8 @@ namespace ali_face_engine {
         int stride;
         int height;
         int dataLen;
+        uint64_t timestamp;
+        unsigned int customerIndex;
 
     public:
         Image();

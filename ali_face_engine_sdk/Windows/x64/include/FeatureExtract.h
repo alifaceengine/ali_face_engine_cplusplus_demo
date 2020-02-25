@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "type.h"
 
 #ifdef WIN32
@@ -20,6 +22,8 @@ namespace ali_face_engine {
     public:
 
         virtual int extractFeature(Image &image, Face &face, string &feature) = 0;
+
+        virtual int extractFeature(Image &image, vector<FacePoint> &kps, string &feature) = 0;
 
     protected:
         FeatureExtract();

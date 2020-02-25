@@ -8,6 +8,7 @@
 #include "FaceDetect.h"
 #include "FaceAttributeAnalyze.h"
 #include "FaceRecognize.h"
+#include "FaceRecognizeNoDB.h"
 #include "FaceVerify.h"
 #include "FaceRegister.h"
 #include "FeatureExtract.h"
@@ -32,9 +33,13 @@ namespace ali_face_engine {
     DLL_API void setJavaVM(JavaVM *vm);
 #endif
 
+    DLL_API bool supportCloud();
+
     DLL_API int setPersistencePath(const char *path);
 
     DLL_API int authorize(char *key);
+
+    DLL_API int unInitialize();
 
     DLL_API void setCloudAddr(const char *ip, const int port);
 
@@ -43,6 +48,8 @@ namespace ali_face_engine {
     DLL_API void enableDebug(const bool enable);
 
     DLL_API bool supportGPU();
+
+    DLL_API int getGPUCount();
 
     //version>=3.3.0
     DLL_API void setConfigString(const char *key, const char *value);
@@ -58,6 +65,8 @@ namespace ali_face_engine {
     DLL_API int getConfigInt(const char *key, const int defaultValue);
 
     DLL_API float getConfigFloat(const char *key, const float defaultValue);
+
+    DLL_API int testPerformance();
 
     //face
     DLL_API Face *newFace();

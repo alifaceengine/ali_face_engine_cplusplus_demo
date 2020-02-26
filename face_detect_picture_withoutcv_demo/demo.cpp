@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "FaceEngine.h"
-#include "../common.h"
 
 #define TAG "FaceDetectPictureDemo"
 
@@ -14,21 +13,23 @@ static string PICTURE_ROOT = "../pictures/";
 
 static int detectPicture();
 
+static int loadFile(unsigned char *&buf, int &len, char *path);
+
 FaceDetect *sFaceDetect;
 
 int main() {
     int status = setPersistencePath("../");
     if (status != OK) {
-        LOG(TAG, "setPersistencePath error(%d)", status);
+        printf("setPersistencePath error(%d)\n", status);
         return 0;
     } else {
-        LOG(TAG, "setPersistencePath ok");
+        printf("setPersistencePath ok\n");
     }
 
     //step 2: create FaceVerify Instance (TERMINAL or CLOUD)
     sFaceDetect = FaceDetect::createInstance(TERMINAL);
 
-    LOG(TAG, "sFaceDetect(%p)", sFaceDetect);
+    printf("sFaceDetect(%p)\n", sFaceDetect);
 
     //step 3: detectPicture
     detectPicture();
@@ -61,7 +62,7 @@ int detectPicture() {
     int status = sFaceDetect->detectPicture(image, faceList);
 
     if (status != OK) {
-        LOG(TAG, "detectPicture error(%d)", status);
+        printf("detectPicture error(%d)\n", status);
         if (image.data) {
             free(image.data);
             image.data = 0;
@@ -69,17 +70,34 @@ int detectPicture() {
         return status;
     }
 
-    LOG(TAG, "detectPicture faceNum(%d)", faceList.size());
+    printf("detectPicture faceNum(%d)\n", faceList.size());
     for (list<Face>::iterator it = faceList.begin(); it != faceList.end(); ++it) {
-        LOG(TAG,
-            "detectPicture faces[%d] rect(%d,%d,%d,%d) quality(%d) liveness(%d) age(%d) gender(%d) expression(%d) glass(%d)",
-            it->trackId, it->rect.left, it->rect.top, it->rect.right, it->rect.bottom, it->attribute.quality.score,
-            it->attribute.liveness.score, it->attribute.age, it->attribute.gender, it->attribute.expression,
-            it->attribute.glass);
+        printf("detectPicture faces[%d] rect(%d,%d,%d,%d) quality(%d) liveness(%d) age(%d) gender(%d) expression(%d) glass(%d)\n",
+               it->trackId, it->rect.left, it->rect.top, it->rect.right, it->rect.bottom, it->attribute.quality.score,
+               it->attribute.liveness.score, it->attribute.age, it->attribute.gender, it->attribute.expression,
+               it->attribute.glass);
     }
 
     if (image.data) {
         free(image.data);
         image.data = 0;
+    }
+}
+
+int loadFile(unsigned char *&buf, int &len, char *path) {
+    FILE *pf = fopen(path, "rb");
+    if (pf != NULL) {
+        fseek(pf, 0, SEEK_END);
+        len = ftell(pf);
+        buf = (unsigned char *) malloc(len);
+        fseek(pf, 0, SEEK_SET);
+        fread(buf, 1, len, pf);
+        fclose(pf);
+
+        return 0;
+    } else {
+        buf = NULL;
+        len = 0;
+        return -1;
     }
 }

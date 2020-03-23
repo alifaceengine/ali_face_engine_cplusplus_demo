@@ -22,19 +22,11 @@ static const char *BASE_PERSONS[] = {
         "zhangxueyou_feature1.jpg", "zhangxueyou_feature2.jpg"};
 static const int BASE_PERSONS_NUM = sizeof(BASE_PERSONS) / sizeof(char *);
 
-static const char *TEST_PERSONS[] = {
-        "liudehua.jpg",
-        "zhangxueyou.jpg"};
-
-static const int TEST_PERSONS_NUM = sizeof(TEST_PERSONS) / sizeof(char *);
-
 static int addPersonsAndFeatures();
-
-static int addFeature(char *personName, char *featureId, const char *filePath);
 
 static int recognizeVideo();
 
-static const char *GROUP_NAME = "SMALL_2000";
+static const char *GROUP_NAME = "SMALL_3000";
 static Group sGroup;
 
 int main() {
@@ -111,60 +103,30 @@ int addPersonsAndFeatures() {
     for (int i = 0; i < BASE_PERSONS_NUM; i++) {
         memset(personName, 0, sizeof(personName));
         memset(featureName, 0, sizeof(featureName));
-        sscanf(BASE_PERSONS[i], "%[^_]", personName);
+        sscanf(BASE_PERSONS[i], "%[^.]", personName);
         sscanf(BASE_PERSONS[i], "%*[^_]_%[^.]", featureName);
+
+        unsigned char *data = 0;
+        int dataLen = 0;
+        loadFile(data, dataLen, (char *) (PICTURE_ROOT + BASE_PERSONS[i]).c_str());
+        if (!data) {
+            LOG(TAG, "loadFile filePath(%s) error", (PICTURE_ROOT + BASE_PERSONS[i]).c_str());
+            return FAILED;
+        }
+
+        Image image;
+        image.data = data;
+        image.format = COMPRESSED;
+        image.dataLen = dataLen;
 
         Person person;
         person.name = personName;
-        int status = sFaceRegister->addPerson(sGroup.id, person);
+        int status = sFaceRegister->registerPicture2(sGroup.name, image, person, featureName);
         if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
             LOG(TAG, "addPerson[%d] %s, error(%d)", i, personName, status);
             return status;
         }
-
-        status = addFeature((char *) person.id.c_str(), featureName, (PICTURE_ROOT + BASE_PERSONS[i]).c_str());
-        if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
-            LOG(TAG, "addFeature[%d] %s, status(%d)", i, featureName, status);
-            return status;
-        }
     }
-    return OK;
-}
-
-int addFeature(char *personId, char *featureName, const char *filePath) {
-    unsigned char *data = 0;
-    int dataLen = 0;
-    loadFile(data, dataLen, (char *) filePath);
-
-    Image image;
-    image.data = data;
-    image.format = COMPRESSED;
-    image.dataLen = dataLen;
-
-    list <Face> faces;
-    int status = sFaceDetect->detectPicture(image, faces);
-
-    if (status != OK || faces.size() == 0) {
-        LOG(TAG, "detectPicture error(%d)", status);
-        return status;
-    }
-
-    string feature;
-    status = sFaceRegister->extractFeature(image, *faces.begin(), sGroup.modelType, feature);
-    if (status != OK) {
-        LOG(TAG, "extractFeature error(%d)", status);
-        return status;
-    }
-
-    Feature feature1;
-    feature1.name = featureName;
-    feature1.feature = feature;
-    status = sFaceRegister->addFeature(personId, feature1);
-    if (status != OK && status != ERROR_EXISTED && status != ERROR_CLOUD_EXISTED_ERROR) {
-        LOG(TAG, "addFeature error(%d)", status);
-        return status;
-    }
-
     return OK;
 }
 
